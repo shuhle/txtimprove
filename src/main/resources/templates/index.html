@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Verbesserung</title>
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js" 
+            integrity="sha384-kfJm1UHujU89hXr0VHT0u0t4lqavqaoomP6wix8D9fhzTeFvC9DYyaT36//Qd144" 
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .model-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            background-color: white;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .model-select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        .result-section h3 {
+            margin-top: 0;
+            color: #28a745;
+        }
+        .result-text {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-top: 10px;
+        }
+        .loading {
+            display: none;
+            color: #007bff;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        .instructions {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        .diff-controls {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .diff-toggle-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 0 5px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .diff-toggle-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .diff-toggle-btn:hover:not(.active) {
+            background-color: #e9ecef;
+        }
+        .diff-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            padding: 0;
+            overflow-x: auto;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .diff-unified {
+            padding: 15px;
+            white-space: pre-wrap;
+        }
+        .diff-side-by-side {
+            display: flex;
+            height: 400px;
+        }
+        .diff-column {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            white-space: pre-wrap;
+        }
+        .diff-column:last-child {
+            border-right: none;
+        }
+        .diff-column-header {
+            font-weight: bold;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .diff-added {
+            background-color: #d4edda;
+            color: #155724;
+            text-decoration: none;
+        }
+        .diff-removed {
+            background-color: #f8d7da;
+            color: #721c24;
+            text-decoration: line-through;
+        }
+        .diff-unchanged {
+            color: #333;
+        }
+        .diff-line {
+            margin: 2px 0;
+            padding: 2px 4px;
+            border-radius: 2px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .prompt-toggle-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #495057;
+            transition: all 0.2s;
+        }
+        .prompt-toggle-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+        .prompt-container {
+            margin-top: 10px;
+            animation: slideDown 0.3s ease-out;
+        }
+        .prompt-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: 'Courier New', Consolas, monospace;
+            resize: vertical;
+            box-sizing: border-box;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: #80bdff;
+            background-color: white;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Text Verbesserung</h1>
+        
+        <div class="instructions">
+            <h3>So funktioniert es:</h3>
+            <ul>
+                <li>Geben Sie Ihren deutschen Text in das Textfeld ein (E-Mail, Brief, Artikel, etc.)</li>
+                <li>Klicken Sie auf "Text verbessern"</li>
+                <li>Die KI verbessert Grammatik, Stil, Klarheit und Struktur</li>
+                <li>Das Ergebnis wird im Bereich darunter angezeigt</li>
+            </ul>
+        </div>
+
+        <form th:action="@{/improve}" method="post" onsubmit="showLoading()">
+            <div class="form-group">
+                <label for="selectedModel">KI-Modell:</label>
+                <select id="selectedModel" name="selectedModel" class="model-select">
+                    <option th:each="model : ${availableModels}" 
+                            th:value="${model}" 
+                            th:text="${model}"
+                            th:selected="${model == selectedModel}"></option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="inputText">Ihr Text (Deutsch):</label>
+                <textarea 
+                    id="inputText" 
+                    name="inputText" 
+                    placeholder="Geben Sie hier Ihren deutschen Text ein, den Sie verbessern möchten. Dies kann eine E-Mail, ein Brief, ein Artikel oder beliebiger anderer Text sein..."
+                    th:text="${inputText}"
+                    required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <div class="prompt-header">
+                    <label for="customPrompt">LLM Prompt anpassen:</label>
+                    <button type="button" class="prompt-toggle-btn" onclick="togglePromptVisibility()" title="Prompt bearbeiten">
+                        ⚙️ <span id="prompt-toggle-text">Anzeigen</span>
+                    </button>
+                </div>
+                <div id="prompt-container" class="prompt-container" style="display: none;">
+                    <textarea 
+                        id="customPrompt" 
+                        name="customPrompt" 
+                        class="prompt-textarea"
+                        placeholder="Hier können Sie den LLM-Prompt anpassen..."
+                        th:text="${customPrompt}">Du bist ein professioneller Texteditor und Schreibcoach für die deutsche Sprache. 
+
+WICHTIG: Gib ausschließlich den verbesserten Text aus - ohne Erklärungen, Kommentare, Emojis, Markdown oder sonstige Zusätze.
+
+Verbessere den folgenden deutschen Text, indem du:
+1. Grammatik und Rechtschreibung korrigierst
+2. Den Stil und die Lesbarkeit verbesserst
+3. Klarheit und Präzision erhöhst
+4. Den Ton professioneller und ansprechender machst
+5. Die Struktur optimierst
+
+Behalte dabei den ursprünglichen Sinn und die Intention des Textes bei.
+Behalte die ursprüngliche Struktur und Formatierung (Absätze, Listen) bei.
+
+Ursprünglicher Text:
+{input_text}
+
+Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">🚀 Text verbessern</button>
+            <div class="loading" id="loading">⏳ Ihr Text wird verarbeitet...</div>
+            
+            <div th:if="${error}" class="error" th:text="${error}"></div>
+        </form>
+
+        <div th:if="${improvedText}" class="result-section">
+            <h3>📝 Verbesserter Text:</h3>
+            <div class="result-text" th:text="${improvedText}"></div>
+            
+            <div style="margin-top: 30px;">
+                <h3>🔍 Detaillierte Änderungen:</h3>
+                <div class="diff-controls">
+                    <button type="button" class="diff-toggle-btn active" data-mode="unified" onclick="toggleDiffMode('unified')">Vereinheitlicht</button>
+                    <button type="button" class="diff-toggle-btn" data-mode="side-by-side" onclick="toggleDiffMode('side-by-side')">Nebeneinander</button>
+                </div>
+                <div id="diff-container" class="diff-container">
+                    <!-- Diff will be rendered here by JavaScript -->
+                </div>
+            </div>
+            
+            
+            <!-- Hidden elements for JavaScript to access the texts -->
+            <div id="original-text" style="display: none;" th:text="${inputText}"></div>
+            <div id="improved-text" style="display: none;" th:text="${improvedText}"></div>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '⏳ Verarbeitung läuft...';
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        let currentDiffMode = 'unified';
+
+        function toggleDiffMode(mode) {
+            currentDiffMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.diff-toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            
+            // Re-render diff
+            renderDiff();
+        }
+
+        function renderDiff() {
+            const originalText = document.getElementById('original-text')?.textContent || '';
+            const improvedText = document.getElementById('improved-text')?.textContent || '';
+            const container = document.getElementById('diff-container');
+            
+            if (!originalText || !improvedText || !container) return;
+            
+            if (typeof Diff === 'undefined') {
+                container.innerHTML = '<div style="padding: 15px; color: red;">Diff library not loaded. Please refresh the page.</div>';
+                return;
+            }
+            
+            // Use character-level diff for finest granularity
+            const diff = Diff.diffChars(originalText, improvedText);
+            
+            if (currentDiffMode === 'unified') {
+                renderUnifiedDiff(diff, container);
+            } else {
+                renderSideBySideDiff(originalText, improvedText, diff, container);
+            }
+        }
+
+        function renderUnifiedDiff(diff, container) {
+            container.className = 'diff-container';
+            const unifiedDiv = document.createElement('div');
+            unifiedDiv.className = 'diff-unified';
+            
+            diff.forEach(function(part) {
+                const span = document.createElement('span');
+                const className = part.added ? 'diff-added' : 
+                                part.removed ? 'diff-removed' : 'diff-unchanged';
+                span.className = className;
+                span.textContent = part.value; // Safe - uses textContent instead of innerHTML
+                unifiedDiv.appendChild(span);
+            });
+            
+            container.innerHTML = ''; // Clear container
+            container.appendChild(unifiedDiv);
+        }
+
+        function renderSideBySideDiff(originalText, improvedText, diff, container) {
+            container.className = 'diff-container';
+            
+            // Create DOM structure safely
+            const sideBySideDiv = document.createElement('div');
+            sideBySideDiv.className = 'diff-side-by-side';
+            
+            // Original column
+            const originalColumn = document.createElement('div');
+            const originalHeader = document.createElement('div');
+            originalHeader.className = 'diff-column-header';
+            originalHeader.textContent = 'Originaltext';
+            const originalContent = document.createElement('div');
+            originalContent.className = 'diff-column';
+            originalColumn.appendChild(originalHeader);
+            originalColumn.appendChild(originalContent);
+            
+            // Improved column
+            const improvedColumn = document.createElement('div');
+            const improvedHeader = document.createElement('div');
+            improvedHeader.className = 'diff-column-header';
+            improvedHeader.textContent = 'Verbesserter Text';
+            const improvedContent = document.createElement('div');
+            improvedContent.className = 'diff-column';
+            improvedColumn.appendChild(improvedHeader);
+            improvedColumn.appendChild(improvedContent);
+            
+            // Process diff parts safely
+            diff.forEach(function(part) {
+                if (part.added) {
+                    const span = document.createElement('span');
+                    span.className = 'diff-added';
+                    span.textContent = part.value;
+                    improvedContent.appendChild(span);
+                } else if (part.removed) {
+                    const span = document.createElement('span');
+                    span.className = 'diff-removed';
+                    span.textContent = part.value;
+                    originalContent.appendChild(span);
+                } else {
+                    // Unchanged text goes to both columns
+                    const originalSpan = document.createElement('span');
+                    originalSpan.className = 'diff-unchanged';
+                    originalSpan.textContent = part.value;
+                    originalContent.appendChild(originalSpan);
+                    
+                    const improvedSpan = document.createElement('span');
+                    improvedSpan.className = 'diff-unchanged';
+                    improvedSpan.textContent = part.value;
+                    improvedContent.appendChild(improvedSpan);
+                }
+            });
+            
+            sideBySideDiv.appendChild(originalColumn);
+            sideBySideDiv.appendChild(improvedColumn);
+            
+            container.innerHTML = ''; // Clear container
+            container.appendChild(sideBySideDiv);
+        }
+
+
+        function togglePromptVisibility() {
+            const container = document.getElementById('prompt-container');
+            const toggleText = document.getElementById('prompt-toggle-text');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                toggleText.textContent = 'Ausblenden';
+            } else {
+                container.style.display = 'none';
+                toggleText.textContent = 'Anzeigen';
+            }
+        }
+
+        // Initialize diff when page loads and results are available
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('original-text') && document.getElementById('improved-text')) {
+                renderDiff();
+            }
+        });
+    </script>
+</body>
+</html>
