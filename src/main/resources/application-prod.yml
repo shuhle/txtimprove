@@ -1,0 +1,22 @@
+spring:
+  ai:
+    openai:
+      api-key: "${OPENAI_API_KEY}"
+      base-url: "${OPENAI_BASE_URL}"
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true  # Enable secure cookies for HTTPS in production
+        http-only: true
+        same-site: strict
+  ssl:
+    enabled: true
+  port: 8443
+
+logging:
+  level:
+    org.springframework.ai: ERROR
+    org.springframework.security: WARN
+    org.springframework.web: WARN

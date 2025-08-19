@@ -3,312 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Verbesserung</title>
+    <meta name="description" th:content="#{page.description}">
+    <title th:text="#{page.title}">Text Verbesserung - KI-gestützte deutsche Textoptimierung</title>
     <script src="https://cdn.jsdelivr.net/npm/diff@5.1.0/dist/diff.min.js" 
             integrity="sha384-kfJm1UHujU89hXr0VHT0u0t4lqavqaoomP6wix8D9fhzTeFvC9DYyaT36//Qd144" 
             crossorigin="anonymous"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            box-sizing: border-box;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        .model-select {
-            width: 100%;
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            font-family: inherit;
-            background-color: white;
-            box-sizing: border-box;
-            cursor: pointer;
-        }
-        .model-select:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .result-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border-left: 4px solid #28a745;
-        }
-        .result-section h3 {
-            margin-top: 0;
-            color: #28a745;
-        }
-        .result-text {
-            background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            white-space: pre-wrap;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .error {
-            color: #dc3545;
-            background-color: #f8d7da;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #f5c6cb;
-            margin-top: 10px;
-        }
-        .loading {
-            display: none;
-            color: #007bff;
-            font-style: italic;
-            margin-top: 10px;
-        }
-        .instructions {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #2196f3;
-        }
-        .instructions ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-        .instructions li {
-            margin-bottom: 5px;
-        }
-        .diff-controls {
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .diff-toggle-btn {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 8px 16px;
-            cursor: pointer;
-            margin: 0 5px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .diff-toggle-btn.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-        .diff-toggle-btn:hover:not(.active) {
-            background-color: #e9ecef;
-        }
-        .diff-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: white;
-            padding: 0;
-            overflow-x: auto;
-            font-family: 'Courier New', Consolas, monospace;
-            font-size: 13px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-        .diff-unified {
-            padding: 15px;
-            white-space: pre-wrap;
-        }
-        .diff-side-by-side {
-            display: flex;
-            height: 400px;
-        }
-        .diff-column {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            border-right: 1px solid #ddd;
-            white-space: pre-wrap;
-        }
-        .diff-column:last-child {
-            border-right: none;
-        }
-        .diff-column-header {
-            font-weight: bold;
-            padding: 10px 15px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        .diff-added {
-            background-color: #d4edda;
-            color: #155724;
-            text-decoration: none;
-        }
-        .diff-removed {
-            background-color: #f8d7da;
-            color: #721c24;
-            text-decoration: line-through;
-        }
-        .diff-unchanged {
-            color: #333;
-        }
-        .diff-line {
-            margin: 2px 0;
-            padding: 2px 4px;
-            border-radius: 2px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .prompt-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .prompt-toggle-btn {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 6px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #495057;
-            transition: all 0.2s;
-        }
-        .prompt-toggle-btn:hover {
-            background-color: #e9ecef;
-            border-color: #adb5bd;
-        }
-        .prompt-container {
-            margin-top: 10px;
-            animation: slideDown 0.3s ease-out;
-        }
-        .prompt-textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 5px;
-            font-size: 12px;
-            font-family: 'Courier New', Consolas, monospace;
-            resize: vertical;
-            box-sizing: border-box;
-            background-color: #f8f9fa;
-            color: #495057;
-        }
-        .prompt-textarea:focus {
-            outline: none;
-            border-color: #80bdff;
-            background-color: white;
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-            }
-            to {
-                opacity: 1;
-                max-height: 300px;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div class="container">
-        <h1>✨ Text Verbesserung</h1>
-        
-        <div class="instructions">
-            <h3>So funktioniert es:</h3>
-            <ul>
-                <li>Geben Sie Ihren deutschen Text in das Textfeld ein (E-Mail, Brief, Artikel, etc.)</li>
-                <li>Klicken Sie auf "Text verbessern"</li>
-                <li>Die KI verbessert Grammatik, Stil, Klarheit und Struktur</li>
-                <li>Das Ergebnis wird im Bereich darunter angezeigt</li>
-            </ul>
+    <a href="#main-content" class="skip-link" th:text="#{accessibility.skipToMainContent}">Zum Hauptinhalt springen</a>
+    
+    <!-- Top Choosers -->
+    <div class="top-choosers">
+        <!-- Theme Chooser -->
+        <div class="theme-chooser">
+            <button type="button" class="theme-btn" id="light-theme-btn"
+                    onclick="switchTheme('light')"
+                    th:title="#{theme.title.light}"
+                    th:text="#{theme.light}">Hell</button>
+            <button type="button" class="theme-btn" id="dark-theme-btn"
+                    onclick="switchTheme('dark')"
+                    th:title="#{theme.title.dark}"
+                    th:text="#{theme.dark}">Dunkel</button>
         </div>
+        
+        <!-- Language Chooser -->
+        <div class="language-chooser">
+            <button type="button" class="lang-btn" 
+                    th:classappend="${#locale.language == 'de'} ? 'active' : ''" 
+                    onclick="switchLanguage('de')"
+                    title="Deutsch">DE</button>
+            <button type="button" class="lang-btn" 
+                    th:classappend="${#locale.language == 'en'} ? 'active' : ''" 
+                    onclick="switchLanguage('en')"
+                    title="English">EN</button>
+        </div>
+    </div>
 
-        <form th:action="@{/improve}" method="post" onsubmit="showLoading()">
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 th:text="#{header.title}">✨ Text Verbesserung</h1>
+            <p class="subtitle" th:text="#{header.subtitle}">für deutsche Texte mit KI-Unterstützung</p>
+        </header>
+        <main id="main-content" class="content" role="main">
+        
+        <form th:action="@{/improve}" method="post" onsubmit="showLoading()" role="form" aria-labelledby="form-heading">
+            <h2 id="form-heading" class="visually-hidden" th:text="#{accessibility.visuallyHiddenFormHeading}">Textverbesserung</h2>
             <div class="form-group">
-                <label for="selectedModel">KI-Modell:</label>
-                <select id="selectedModel" name="selectedModel" class="model-select">
-                    <option th:each="model : ${availableModels}" 
-                            th:value="${model}" 
-                            th:text="${model}"
-                            th:selected="${model == selectedModel}"></option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="inputText">Ihr Text (Deutsch):</label>
+                <label for="inputText" th:text="#{form.inputText.label}">Text (Deutsch):</label>
                 <textarea 
                     id="inputText" 
                     name="inputText" 
-                    placeholder="Geben Sie hier Ihren deutschen Text ein, den Sie verbessern möchten. Dies kann eine E-Mail, ein Brief, ein Artikel oder beliebiger anderer Text sein..."
+                    th:placeholder="#{form.inputText.placeholder}"
                     th:text="${inputText}"
-                    required></textarea>
+                    required
+                    aria-describedby="inputText-help"
+                    aria-invalid="false"></textarea>
+                <div id="inputText-help" class="visually-hidden" th:text="#{accessibility.visuallyHiddenInputHelp}">Geben Sie den deutschen Text ein, den Sie verbessern möchten</div>
             </div>
             
             <div class="form-group">
                 <div class="prompt-header">
-                    <label for="customPrompt">LLM Prompt anpassen:</label>
-                    <button type="button" class="prompt-toggle-btn" onclick="togglePromptVisibility()" title="Prompt bearbeiten">
-                        ⚙️ <span id="prompt-toggle-text">Anzeigen</span>
+                    <div class="model-selection">
+                        <span class="model-label" id="model-label" th:text="#{form.modelSelection.label}">KI-Modell:</span>
+                        <button type="button" id="current-model-display" class="current-model" onclick="toggleModelSelection()" th:text="${selectedModel}" th:title="#{form.modelSelection.title}" aria-describedby="model-label" aria-expanded="false" aria-haspopup="listbox">gpt-4</button>
+                        <select id="selectedModel" name="selectedModel" class="model-select-hidden" style="display: none;" aria-labelledby="model-label">
+                            <option th:each="model : ${availableModels}" 
+                                    th:value="${model}" 
+                                    th:text="${model}"
+                                    th:selected="${model == selectedModel}"></option>
+                        </select>
+                    </div>
+                    <button type="button" class="prompt-toggle-btn" onclick="togglePromptVisibility()" th:title="#{form.promptToggle.title}" aria-expanded="false" aria-controls="prompt-container">
+                        ⚙️ <span id="prompt-toggle-text" th:text="#{form.promptToggle.show}">Prompt anzeigen</span>
                     </button>
                 </div>
-                <div id="prompt-container" class="prompt-container" style="display: none;">
+                <div id="prompt-container" class="prompt-container" style="display: none;" role="region" aria-labelledby="prompt-heading">
+                    <label for="customPrompt" id="prompt-heading" class="visually-hidden" th:text="#{accessibility.visuallyHiddenPromptHeading}">Benutzerdefinierter Prompt</label>
                     <textarea 
                         id="customPrompt" 
                         name="customPrompt" 
                         class="prompt-textarea"
-                        placeholder="Hier können Sie den LLM-Prompt anpassen..."
+                        th:placeholder="#{form.customPrompt.placeholder}"
+                        aria-describedby="prompt-help"
                         th:text="${customPrompt}">Du bist ein professioneller Texteditor und Schreibcoach für die deutsche Sprache. 
 
 WICHTIG: Gib ausschließlich den verbesserten Text aus - ohne Erklärungen, Kommentare, Emojis, Markdown oder sonstige Zusätze.
@@ -327,26 +107,27 @@ Ursprünglicher Text:
 {input_text}
 
 Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
+                    <div id="prompt-help" class="visually-hidden" th:text="#{accessibility.visuallyHiddenPromptHelp}">Anpassung des KI-Prompts für die Textverbesserung</div>
                 </div>
             </div>
             
-            <button type="submit" class="btn" id="submitBtn">🚀 Text verbessern</button>
-            <div class="loading" id="loading">⏳ Ihr Text wird verarbeitet...</div>
+            <button type="submit" class="btn" id="submitBtn" aria-describedby="loading" th:text="#{form.submit.button}">🚀 Text verbessern</button>
+            <div class="loading" id="loading" role="status" aria-live="polite" aria-atomic="true" th:text="#{loading.processing}">⏳ Text wird verarbeitet...</div>
             
-            <div th:if="${error}" class="error" th:text="${error}"></div>
+            <div th:if="${error}" class="error" role="alert" aria-live="assertive" th:text="${error}"></div>
         </form>
 
-        <div th:if="${improvedText}" class="result-section">
-            <h3>📝 Verbesserter Text:</h3>
-            <div class="result-text" th:text="${improvedText}"></div>
+        <section th:if="${improvedText}" class="result-section" role="region" aria-labelledby="results-heading">
+            <h2 id="results-heading" th:text="#{results.heading}">Verbesserter Text:</h2>
+            <div class="result-text" th:text="${improvedText}" role="textbox" aria-readonly="true" tabindex="0"></div>
             
             <div style="margin-top: 30px;">
-                <h3>🔍 Detaillierte Änderungen:</h3>
-                <div class="diff-controls">
-                    <button type="button" class="diff-toggle-btn active" data-mode="unified" onclick="toggleDiffMode('unified')">Vereinheitlicht</button>
-                    <button type="button" class="diff-toggle-btn" data-mode="side-by-side" onclick="toggleDiffMode('side-by-side')">Nebeneinander</button>
+                <h3 id="diff-heading" th:text="#{results.diff.heading}">🔍 Detaillierte Änderungen:</h3>
+                <div class="diff-controls" role="tablist" aria-labelledby="diff-heading">
+                    <button type="button" class="diff-toggle-btn active" data-mode="side-by-side" onclick="toggleDiffMode('side-by-side')" role="tab" aria-selected="true" aria-controls="diff-container" id="tab-side-by-side" th:text="#{results.diff.sideBySide}">Nebeneinander</button>
+                    <button type="button" class="diff-toggle-btn" data-mode="unified" onclick="toggleDiffMode('unified')" role="tab" aria-selected="false" aria-controls="diff-container" id="tab-unified" th:text="#{results.diff.unified}">Vereinheitlicht</button>
                 </div>
-                <div id="diff-container" class="diff-container">
+                <div id="diff-container" class="diff-container" role="tabpanel" aria-labelledby="tab-side-by-side">
                     <!-- Diff will be rendered here by JavaScript -->
                 </div>
             </div>
@@ -355,26 +136,224 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
             <!-- Hidden elements for JavaScript to access the texts -->
             <div id="original-text" style="display: none;" th:text="${inputText}"></div>
             <div id="improved-text" style="display: none;" th:text="${improvedText}"></div>
-        </div>
+        </section>
+        </main>
     </div>
 
-    <script>
-        function showLoading() {
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = '⏳ Verarbeitung läuft...';
-            document.getElementById('loading').style.display = 'block';
+    <script th:inline="javascript">
+        // Internationalized messages for JavaScript
+        var messages = {
+            'form.submit.processing': /*[[#{form.submit.processing}]]*/ '⏳ Verarbeitung läuft...',
+            'loading.processingWait': /*[[#{loading.processingWait}]]*/ 'Text wird verarbeitet. Bitte warten...',
+            'error.emptyText': /*[[#{error.emptyText}]]*/ 'Bitte geben Sie einen Text ein, der verbessert werden soll.',
+            'error.minLength': /*[[#{error.minLength}]]*/ 'Der Text muss mindestens 3 Zeichen lang sein.',
+            'error.maxLength': /*[[#{error.maxLength}]]*/ 'Der Text darf maximal 10.000 Zeichen lang sein.',
+            'error.diffLibraryNotLoaded': /*[[#{error.diffLibraryNotLoaded}]]*/ 'Diff library not loaded. Please refresh the page.',
+            'form.promptToggle.hide': /*[[#{form.promptToggle.hide}]]*/ 'Prompt ausblenden',
+            'form.promptToggle.show': /*[[#{form.promptToggle.show}]]*/ 'Prompt anzeigen',
+            'results.diff.originalText': /*[[#{results.diff.originalText}]]*/ 'Originaltext',
+            'results.diff.improvedText': /*[[#{results.diff.improvedText}]]*/ 'Verbesserter Text',
+            'announce.promptOpened': /*[[#{announce.promptOpened}]]*/ 'Prompt-Bereich geöffnet',
+            'announce.promptClosed': /*[[#{announce.promptClosed}]]*/ 'Prompt-Bereich geschlossen',
+            'announce.modelSelectionOpened': /*[[#{announce.modelSelectionOpened}]]*/ 'Modellauswahl geöffnet',
+            'announce.modelSelected': /*[[#{announce.modelSelected}]]*/ 'Modell gewählt: {0}',
+            'announce.diffModeChanged.sideBySide': /*[[#{announce.diffModeChanged.sideBySide}]]*/ 'Ansicht gewechselt zu Nebeneinander',
+            'announce.diffModeChanged.unified': /*[[#{announce.diffModeChanged.unified}]]*/ 'Ansicht gewechselt zu Vereinheitlicht',
+            'announce.textImprovementCompleted': /*[[#{announce.textImprovementCompleted}]]*/ 'Textverbesserung abgeschlossen. Ergebnisse verfügbar.',
+            'announce.error': /*[[#{announce.error}]]*/ 'Fehler: {0}'
+        };
+
+        function getMessage(key, ...args) {
+            let message = messages[key] || key;
+            if (args.length > 0) {
+                args.forEach((arg, index) => {
+                    message = message.replace('{' + index + '}', arg);
+                });
+            }
+            return message;
         }
 
-        let currentDiffMode = 'unified';
+        function switchLanguage(lang) {
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+
+        function switchTheme(theme) {
+            // Validate theme parameter
+            if (theme !== 'light' && theme !== 'dark') {
+                console.warn('Invalid theme:', theme);
+                return;
+            }
+            
+            const html = document.documentElement;
+            const lightBtn = document.getElementById('light-theme-btn');
+            const darkBtn = document.getElementById('dark-theme-btn');
+            
+            // Update data-theme attribute
+            html.setAttribute('data-theme', theme);
+            
+            // Update button states
+            lightBtn.classList.remove('active');
+            darkBtn.classList.remove('active');
+            
+            if (theme === 'light') {
+                lightBtn.classList.add('active');
+            } else {
+                darkBtn.classList.add('active');
+            }
+            
+            // Store preference in localStorage (validated theme)
+            try {
+                localStorage.setItem('theme', theme);
+            } catch (e) {
+                console.warn('Could not save theme preference:', e);
+            }
+        }
+
+        function initializeTheme() {
+            const html = document.documentElement;
+            const lightBtn = document.getElementById('light-theme-btn');
+            const darkBtn = document.getElementById('dark-theme-btn');
+            
+            // Check for stored preference with validation
+            const storedTheme = localStorage.getItem('theme');
+            
+            if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark')) {
+                // Use stored preference only if it's valid
+                switchTheme(storedTheme);
+            } else {
+                // Check system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    darkBtn.classList.add('active');
+                } else {
+                    lightBtn.classList.add('active');
+                }
+            }
+            
+            // Listen for system theme changes when no manual preference is set
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    lightBtn.classList.remove('active');
+                    darkBtn.classList.remove('active');
+                    if (e.matches) {
+                        darkBtn.classList.add('active');
+                    } else {
+                        lightBtn.classList.add('active');
+                    }
+                }
+            });
+        }
+
+        function showLoading() {
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const inputText = document.getElementById('inputText');
+            
+            // Validate form before submission
+            if (!validateForm()) {
+                return false;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = getMessage('form.submit.processing');
+            submitBtn.setAttribute('aria-busy', 'true');
+            loading.style.display = 'block';
+            loading.textContent = getMessage('loading.processingWait');
+            
+            // Remove any existing error states
+            clearFormErrors();
+            
+            return true;
+        }
+        
+        function validateForm() {
+            const inputText = document.getElementById('inputText');
+            const textValue = inputText.value.trim();
+            
+            // Clear previous errors
+            clearFormErrors();
+            
+            // Check if text is empty
+            if (!textValue) {
+                showFieldError(inputText, getMessage('error.emptyText'));
+                return false;
+            }
+            
+            // Check minimum length (at least 3 characters)
+            if (textValue.length < 3) {
+                showFieldError(inputText, getMessage('error.minLength'));
+                return false;
+            }
+            
+            // Check maximum length (reasonable limit)
+            if (textValue.length > 10000) {
+                showFieldError(inputText, getMessage('error.maxLength'));
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function showFieldError(field, message) {
+            // Create or update error message
+            let errorElement = document.getElementById(field.id + '-error');
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.id = field.id + '-error';
+                errorElement.className = 'field-error';
+                errorElement.setAttribute('role', 'alert');
+                errorElement.setAttribute('aria-live', 'polite');
+                field.parentNode.appendChild(errorElement);
+            }
+            
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // Update field ARIA attributes
+            field.setAttribute('aria-invalid', 'true');
+            field.setAttribute('aria-describedby', field.getAttribute('aria-describedby') + ' ' + errorElement.id);
+            
+            // Focus the field
+            field.focus();
+            
+            // Announce error to screen readers
+            announceToScreenReader(getMessage('announce.error', message));
+        }
+        
+        function clearFormErrors() {
+            const errorElements = document.querySelectorAll('.field-error');
+            errorElements.forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            // Reset ARIA attributes
+            const inputText = document.getElementById('inputText');
+            inputText.setAttribute('aria-invalid', 'false');
+            inputText.setAttribute('aria-describedby', 'inputText-help');
+        }
+
+        let currentDiffMode = 'side-by-side';
 
         function toggleDiffMode(mode) {
             currentDiffMode = mode;
             
-            // Update button states
+            // Update button states and ARIA attributes
             document.querySelectorAll('.diff-toggle-btn').forEach(btn => {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
             });
-            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            const activeBtn = document.querySelector(`[data-mode="${mode}"]`);
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-selected', 'true');
+            
+            // Update tabpanel labeling
+            const diffContainer = document.getElementById('diff-container');
+            diffContainer.setAttribute('aria-labelledby', `tab-${mode}`);
+            
+            // Announce change to screen readers
+            announceToScreenReader(mode === 'side-by-side' ? getMessage('announce.diffModeChanged.sideBySide') : getMessage('announce.diffModeChanged.unified'));
             
             // Re-render diff
             renderDiff();
@@ -388,12 +367,17 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
             if (!originalText || !improvedText || !container) return;
             
             if (typeof Diff === 'undefined') {
-                container.innerHTML = '<div style="padding: 15px; color: red;">Diff library not loaded. Please refresh the page.</div>';
+                // Safe DOM creation instead of innerHTML
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'padding: 15px; color: red;';
+                errorDiv.textContent = getMessage('error.diffLibraryNotLoaded');
+                container.innerHTML = ''; // Clear first
+                container.appendChild(errorDiv);
                 return;
             }
             
-            // Use character-level diff for finest granularity
-            const diff = Diff.diffChars(originalText, improvedText);
+            // Use word-level diff for better readability
+            const diff = Diff.diffWords(originalText, improvedText);
             
             if (currentDiffMode === 'unified') {
                 renderUnifiedDiff(diff, container);
@@ -431,7 +415,7 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
             const originalColumn = document.createElement('div');
             const originalHeader = document.createElement('div');
             originalHeader.className = 'diff-column-header';
-            originalHeader.textContent = 'Originaltext';
+            originalHeader.textContent = getMessage('results.diff.originalText');
             const originalContent = document.createElement('div');
             originalContent.className = 'diff-column';
             originalColumn.appendChild(originalHeader);
@@ -441,7 +425,7 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
             const improvedColumn = document.createElement('div');
             const improvedHeader = document.createElement('div');
             improvedHeader.className = 'diff-column-header';
-            improvedHeader.textContent = 'Verbesserter Text';
+            improvedHeader.textContent = getMessage('results.diff.improvedText');
             const improvedContent = document.createElement('div');
             improvedContent.className = 'diff-column';
             improvedColumn.appendChild(improvedHeader);
@@ -484,20 +468,123 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
         function togglePromptVisibility() {
             const container = document.getElementById('prompt-container');
             const toggleText = document.getElementById('prompt-toggle-text');
+            const toggleBtn = document.querySelector('.prompt-toggle-btn');
             
             if (container.style.display === 'none') {
                 container.style.display = 'block';
-                toggleText.textContent = 'Ausblenden';
+                toggleText.textContent = getMessage('form.promptToggle.hide');
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                announceToScreenReader(getMessage('announce.promptOpened'));
+                document.getElementById('customPrompt').focus();
             } else {
                 container.style.display = 'none';
-                toggleText.textContent = 'Anzeigen';
+                toggleText.textContent = getMessage('form.promptToggle.show');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                announceToScreenReader(getMessage('announce.promptClosed'));
+                toggleBtn.focus();
             }
         }
 
-        // Initialize diff when page loads and results are available
+        function toggleModelSelection() {
+            const modelSelect = document.getElementById('selectedModel');
+            const currentModelDisplay = document.getElementById('current-model-display');
+            
+            if (modelSelect.style.display === 'none') {
+                modelSelect.style.display = 'inline-block';
+                currentModelDisplay.style.display = 'none';
+                currentModelDisplay.setAttribute('aria-expanded', 'true');
+                modelSelect.focus();
+                announceToScreenReader(getMessage('announce.modelSelectionOpened'));
+            } else {
+                modelSelect.style.display = 'none';
+                currentModelDisplay.style.display = 'inline';
+                currentModelDisplay.setAttribute('aria-expanded', 'false');
+                currentModelDisplay.textContent = modelSelect.options[modelSelect.selectedIndex].text;
+                currentModelDisplay.focus();
+                announceToScreenReader(getMessage('announce.modelSelected', modelSelect.options[modelSelect.selectedIndex].text));
+            }
+        }
+
+        // Utility function for screen reader announcements
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            // Remove after announcement
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+        
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            // Tab navigation for diff mode buttons
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                const activeElement = document.activeElement;
+                if (activeElement.classList.contains('diff-toggle-btn')) {
+                    e.preventDefault();
+                    const buttons = Array.from(document.querySelectorAll('.diff-toggle-btn'));
+                    const currentIndex = buttons.indexOf(activeElement);
+                    const nextIndex = e.key === 'ArrowRight' ? 
+                        (currentIndex + 1) % buttons.length :
+                        (currentIndex - 1 + buttons.length) % buttons.length;
+                    buttons[nextIndex].focus();
+                    buttons[nextIndex].click();
+                }
+            }
+            
+            // Escape key to close dropdowns
+            if (e.key === 'Escape') {
+                const modelSelect = document.getElementById('selectedModel');
+                const promptContainer = document.getElementById('prompt-container');
+                
+                if (modelSelect.style.display !== 'none') {
+                    toggleModelSelection();
+                }
+                if (promptContainer.style.display !== 'none') {
+                    togglePromptVisibility();
+                }
+            }
+            
+            // Enter/Space to activate buttons
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('current-model')) {
+                e.preventDefault();
+                toggleModelSelection();
+            }
+        });
+        
+        // Form submission handling
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme
+            initializeTheme();
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validateForm()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    return showLoading();
+                });
+                
+                // Real-time validation feedback
+                const inputText = document.getElementById('inputText');
+                inputText.addEventListener('input', function() {
+                    if (this.getAttribute('aria-invalid') === 'true') {
+                        // Clear error if user starts typing
+                        clearFormErrors();
+                    }
+                });
+            }
+            
+            // Initialize diff when page loads and results are available
             if (document.getElementById('original-text') && document.getElementById('improved-text')) {
                 renderDiff();
+                announceToScreenReader(getMessage('announce.textImprovementCompleted'));
             }
         });
     </script>

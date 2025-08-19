@@ -3,39 +3,85 @@ package txtimprove.service;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 @Service
 public class TextImprovementService {
 
     private final ChatClient chatClient;
-    
-    private static final String DEFAULT_IMPROVEMENT_PROMPT = """
-            Du bist ein professioneller Texteditor und Schreibcoach für die deutsche Sprache. 
-            
-            WICHTIG: Gib ausschließlich den verbesserten Text aus - ohne Erklärungen, Kommentare, Emojis, Markdown oder sonstige Zusätze.
-            
-            Verbessere den folgenden deutschen Text, indem du:
-            1. Grammatik und Rechtschreibung korrigierst
-            2. Den Stil und die Lesbarkeit verbesserst
-            3. Klarheit und Präzision erhöhst
-            4. Den Ton professioneller und ansprechender machst
-            5. Die Struktur optimierst
-            
-            Behalte dabei den ursprünglichen Sinn und die Intention des Textes bei.
-            Behalte die ursprüngliche Struktur und Formatierung (Absätze, Listen) bei.
-            
-            Ursprünglicher Text:
-            {input_text}
-            
-            Verbesserter Text (nur der Text, keine Erklärungen):
-            """;
+    private final MessageService messageService;
 
-    public TextImprovementService(ChatClient.Builder chatClientBuilder) {
+    public TextImprovementService(ChatClient.Builder chatClientBuilder, MessageService messageService) {
         this.chatClient = chatClientBuilder.build();
+        this.messageService = messageService;
+    }
+
+    private static final Pattern[] THINKING_PATTERNS = {
+        // XML-style thinking tags (case insensitive, multiline)
+        Pattern.compile("<think[^>]*>.*?</think[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<thinking[^>]*>.*?</thinking[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<reasoning[^>]*>.*?</reasoning[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<thought[^>]*>.*?</thought[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<analysis[^>]*>.*?</analysis[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<planning[^>]*>.*?</planning[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<reflection[^>]*>.*?</reflection[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<internal[^>]*>.*?</internal[^>]*>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        
+        // Markdown-style thinking headers (English and Chinese)
+        Pattern.compile("\\*\\*\\s*(Thinking|思考|Thought|Analysis|Reasoning|Planning)\\s*[:：]\\*\\*.*?(?=\\n\\n|\\n\\*\\*|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        
+        // Bracket-style thinking markers
+        Pattern.compile("\\[\\s*(Thinking|思考|Thought|Analysis|Reasoning|Planning)\\s*[:：]?\\s*\\].*?(?=\\n\\n|\\n\\[|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        
+        // Common thinking phrases at the start of responses
+        Pattern.compile("^\\s*(Let me think about this|I need to think|思考一下|让我想想|分析一下).*?(?=\\n\\n|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE),
+        
+        // Step-by-step thinking patterns
+        Pattern.compile("^\\s*(Step \\d+:|步骤\\d+：|第\\d+步：)\\s*(Think|思考|分析).*?(?=\\n\\n|Step \\d+:|步骤\\d+：|第\\d+步：|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE),
+        
+        // Channel-based structured output patterns (like <|channel|>analysis<|message|>...)
+        Pattern.compile("<\\|channel\\|>[^<]*<\\|message\\|>.*?<\\|end\\|>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<\\|start\\|>[^<]*<\\|channel\\|>(?!final)[^<]*<\\|message\\|>.*?(?=<\\|start\\||$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
+    };
+
+    private String removeThinkingContent(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return text;
+        }
+        
+        String cleanedText = text;
+        
+        // Special handling for channel-based structured outputs
+        // Extract only the final message from channel-based responses
+        Pattern finalChannelPattern = Pattern.compile("<\\|start\\|>assistant<\\|channel\\|>final<\\|message\\|>(.*?)(?:<\\|end\\||$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        Matcher finalMatcher = finalChannelPattern.matcher(cleanedText);
+        if (finalMatcher.find()) {
+            cleanedText = finalMatcher.group(1).trim();
+        } else {
+            // If no final channel found, try to extract any final content after channel markers
+            Pattern anyFinalPattern = Pattern.compile("<\\|channel\\|>final<\\|message\\|>(.*?)(?:<\\|end\\||$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+            Matcher anyFinalMatcher = anyFinalPattern.matcher(cleanedText);
+            if (anyFinalMatcher.find()) {
+                cleanedText = anyFinalMatcher.group(1).trim();
+            } else {
+                // Apply all thinking patterns if no channel structure found
+                for (Pattern pattern : THINKING_PATTERNS) {
+                    cleanedText = pattern.matcher(cleanedText).replaceAll("");
+                }
+            }
+        }
+        
+        // Remove excessive whitespace and empty lines
+        cleanedText = cleanedText.replaceAll("\\n\\s*\\n\\s*\\n", "\n\n"); // Multiple empty lines to double
+        cleanedText = cleanedText.replaceAll("^\\s+", ""); // Leading whitespace
+        cleanedText = cleanedText.replaceAll("\\s+$", ""); // Trailing whitespace
+        
+        return cleanedText;
     }
 
     public String getDefaultPrompt() {
-        return DEFAULT_IMPROVEMENT_PROMPT;
+        return messageService.getMessage("prompt.default");
     }
 
     public String improveText(String inputText) {
@@ -50,7 +96,7 @@ public class TextImprovementService {
         try {
             String prompt = (customPrompt != null && !customPrompt.trim().isEmpty()) 
                 ? customPrompt 
-                : DEFAULT_IMPROVEMENT_PROMPT;
+                : getDefaultPrompt();
             
             var promptBuilder = chatClient.prompt()
                 .user(userSpec -> userSpec.text(prompt.replace("{input_text}", inputText)));
@@ -65,60 +111,12 @@ public class TextImprovementService {
             
             String result = promptBuilder.call().content();
             
-            // Clean up thinking/reasoning traces from models that output them
-            return cleanLLMResponse(result);
+            // Remove thinking content from the AI response
+            String cleanedResult = removeThinkingContent(result);
+            
+            return cleanedResult;
         } catch (Exception e) {
-            return "Fehler beim Verarbeiten des Textes: " + e.getMessage();
+            return messageService.getMessage("error.processing", new Object[]{e.getMessage()});
         }
-    }
-
-    private String cleanLLMResponse(String response) {
-        if (response == null || response.trim().isEmpty()) {
-            return response;
-        }
-
-        // Handle thinking traces with channel tags (e.g., <|channel|>analysis<|message|>....<|channel|>final<|message|>)
-        if (response.contains("<|channel|>final<|message|>")) {
-            String[] parts = response.split("<\\|channel\\|>final<\\|message\\|>");
-            if (parts.length > 1) {
-                // Extract everything after the final message marker
-                String finalPart = parts[parts.length - 1];
-                // Remove any trailing end markers
-                finalPart = finalPart.replaceAll("<\\|end\\|>.*$", "").trim();
-                return finalPart;
-            }
-        }
-
-        // Handle other common thinking patterns
-        if (response.contains("<|start|>assistant")) {
-            String[] parts = response.split("<\\|start\\|>assistant");
-            if (parts.length > 1) {
-                String finalPart = parts[parts.length - 1];
-                // Clean up any remaining channel markers
-                finalPart = finalPart.replaceAll("<\\|channel\\|>[^<]*<\\|message\\|>", "").trim();
-                finalPart = finalPart.replaceAll("<\\|end\\|>.*$", "").trim();
-                return finalPart;
-            }
-        }
-
-        // Handle simple thinking patterns like "Let me think..." followed by actual response
-        if (response.contains("Let me think") || response.contains("I need to") || response.contains("Let's")) {
-            // Try to find the last substantial sentence that looks like the final answer
-            String[] sentences = response.split("\\.");
-            for (int i = sentences.length - 1; i >= 0; i--) {
-                String sentence = sentences[i].trim();
-                // Skip thinking indicators and metadata
-                if (!sentence.toLowerCase().contains("let me") && 
-                    !sentence.toLowerCase().contains("i need") &&
-                    !sentence.toLowerCase().contains("let's") &&
-                    !sentence.contains("<|") &&
-                    sentence.length() > 10) {
-                    return sentence + ".";
-                }
-            }
-        }
-
-        // If no special patterns found, return original response
-        return response.trim();
     }
 }

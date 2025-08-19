@@ -8,9 +8,9 @@ A Spring Boot application that uses AI models to improve German text with visual
 
 ## 🌟 Features
 
-- **AI-powered text improvement** for German language
+- **AI-powered text improvement** for German and English language
 - **Model selection** from OpenAI-compatible API servers  
-- **Visual diff comparison** showing character-level changes
+- **Visual diff comparison** showing word-level changes
 - **Custom prompt editing** for advanced users
 - **Secure implementation** with XSS protection and input validation
 - **Smart model preselection** (prefers Mistral > Gemma > alphabetical)
@@ -33,8 +33,8 @@ open http://localhost:8080
 
 ## 💡 How It Works
 
-1. **Select Model**: Choose from available AI models detected from your server
-2. **Enter Text**: Input German text that needs improvement (emails, documents, etc.)
+1. **Enter Text**: Input German text that needs improvement (emails, documents, etc.)
+2. **Select Model**: Choose from available AI models detected from your server
 3. **Customize Prompt**: Optionally modify the AI prompt for specific requirements
 4. **Get Results**: View improved text with character-level diff highlighting changes
 5. **Compare**: See exactly what was changed with visual diff comparison
@@ -96,16 +96,6 @@ export DEFAULT_MODEL="your-preferred-model"
 - Subresource Integrity for external dependencies
 - Cookie-only session tracking
 - Error message sanitization
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a pull request
 
 ## 📝 License
 

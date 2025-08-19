@@ -55,9 +55,10 @@ public class ModelDiscoveryService {
             }
             
         } catch (RestClientException e) {
-            System.err.println("Failed to fetch models from API: " + e.getMessage());
+            // Log error without exposing sensitive information
+            System.err.println("Failed to fetch models from API: " + (e.getMessage() != null ? e.getMessage().replaceAll("(?i)(key|token|password)=[^\\s]*", "$1=***") : "Unknown error"));
         } catch (Exception e) {
-            System.err.println("Error parsing models response: " + e.getMessage());
+            System.err.println("Error parsing models response: " + (e.getMessage() != null ? e.getMessage() : "Unknown parsing error"));
         }
         
         // Fallback to default model if API call fails

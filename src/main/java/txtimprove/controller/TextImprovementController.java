@@ -2,6 +2,7 @@ package txtimprove.controller;
 
 import txtimprove.service.TextImprovementService;
 import txtimprove.service.ModelDiscoveryService;
+import txtimprove.service.MessageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,17 +11,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Controller
 public class TextImprovementController {
 
     private final TextImprovementService textImprovementService;
     private final ModelDiscoveryService modelDiscoveryService;
+    private final MessageService messageService;
+    
+    // Pattern to detect potentially malicious content
+    private static final Pattern MALICIOUS_PATTERN = Pattern.compile(
+        "(?i)<script|javascript:|data:|vbscript:|on\\w+\\s*=|<iframe|<object|<embed",
+        Pattern.CASE_INSENSITIVE
+    );
 
     public TextImprovementController(TextImprovementService textImprovementService,
-                                   ModelDiscoveryService modelDiscoveryService) {
+                                   ModelDiscoveryService modelDiscoveryService,
+                                   MessageService messageService) {
         this.textImprovementService = textImprovementService;
         this.modelDiscoveryService = modelDiscoveryService;
+        this.messageService = messageService;
     }
 
     @GetMapping("/")
@@ -54,17 +65,24 @@ public class TextImprovementController {
                              @RequestParam(value = "customPrompt", required = false) String customPrompt,
                              @RequestParam(value = "selectedModel", required = false) String selectedModel,
                              RedirectAttributes redirectAttributes) {
-        // Input validation
+        // Input validation and sanitization
         if (inputText == null || inputText.trim().isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Bitte geben Sie einen Text ein.");
+            redirectAttributes.addFlashAttribute("error", messageService.getMessage("error.inputRequired"));
             redirectAttributes.addFlashAttribute("customPrompt", customPrompt != null ? customPrompt : textImprovementService.getDefaultPrompt());
             redirectAttributes.addFlashAttribute("selectedModel", selectedModel);
             return "redirect:/";
         }
         
+        // Security: Check for potentially malicious content
+        if (MALICIOUS_PATTERN.matcher(inputText).find() || 
+            (customPrompt != null && MALICIOUS_PATTERN.matcher(customPrompt).find())) {
+            redirectAttributes.addFlashAttribute("error", messageService.getMessage("error.invalidContent"));
+            return "redirect:/";
+        }
+        
         // Security: Limit input sizes to prevent DoS
         if (inputText.length() > 10000) {
-            redirectAttributes.addFlashAttribute("error", "Text ist zu lang (max. 10.000 Zeichen).");
+            redirectAttributes.addFlashAttribute("error", messageService.getMessage("error.textTooLong"));
             redirectAttributes.addFlashAttribute("inputText", inputText.substring(0, 10000));
             redirectAttributes.addFlashAttribute("customPrompt", customPrompt != null ? customPrompt : textImprovementService.getDefaultPrompt());
             redirectAttributes.addFlashAttribute("selectedModel", selectedModel);
@@ -72,7 +90,7 @@ public class TextImprovementController {
         }
         
         if (customPrompt != null && customPrompt.length() > 5000) {
-            redirectAttributes.addFlashAttribute("error", "Prompt ist zu lang (max. 5.000 Zeichen).");
+            redirectAttributes.addFlashAttribute("error", messageService.getMessage("error.promptTooLong"));
             redirectAttributes.addFlashAttribute("inputText", inputText);
             redirectAttributes.addFlashAttribute("customPrompt", customPrompt.substring(0, 5000));
             redirectAttributes.addFlashAttribute("selectedModel", selectedModel);

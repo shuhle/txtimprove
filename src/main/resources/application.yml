@@ -17,6 +17,12 @@ server:
   servlet:
     session:
       tracking-modes: cookie
+      cookie:
+        secure: false
+        http-only: true
+        same-site: strict
+      timeout: 30m
+  shutdown: graceful
 
 logging:
   level:

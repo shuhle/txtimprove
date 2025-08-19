@@ -87,6 +87,19 @@ Desktop.ini
 application-local.yml
 application-local.properties
 
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Secrets and API keys
+secrets/
+*.key
+*.pem
+*.p12
+*.jks
+
 # Logs
 logs/
 *.log
