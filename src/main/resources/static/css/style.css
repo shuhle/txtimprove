@@ -78,6 +78,57 @@
     z-index: 100;
 }
 
+/* Back Button */
+.back-button-container {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--background-secondary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+}
+
+.back-button:hover {
+    background: var(--primary-light);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+}
+
+.back-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset);
+    border-color: var(--focus-ring);
+    text-decoration: none;
+}
+
+.back-button:active {
+    transform: translateY(0);
+}
+
+.back-button svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
 /* Language Chooser */
 .language-chooser {
     display: flex;
@@ -91,13 +142,13 @@
 }
 
 .lang-btn, .theme-btn {
-    background: var(--background-secondary);
-    border: 1px solid var(--border);
+    background: var(--accent);
+    border: 1px solid var(--primary);
     padding: 0.375rem 0.75rem;
     border-radius: var(--radius-xs);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: white;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-transform: uppercase;
@@ -107,9 +158,9 @@
 }
 
 .lang-btn:hover, .theme-btn:hover {
-    background: var(--primary-light);
-    border-color: var(--border-hover);
-    color: var(--text-primary);
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: white;
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
 }
@@ -121,16 +172,16 @@
 }
 
 .lang-btn.active, .theme-btn.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--primary);
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border);
     box-shadow: var(--shadow-sm);
 }
 
 .lang-btn.active:hover, .theme-btn.active:hover {
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
-    color: white;
+    background: var(--primary-light);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
 }
 
 body {
@@ -140,7 +191,7 @@ body {
     color: var(--text-primary);
     background: var(--background-secondary);
     min-height: 100vh;
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -158,7 +209,7 @@ body {
 
 .header {
     background: var(--primary);
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     text-align: center;
     color: white;
     position: relative;
@@ -166,31 +217,31 @@ body {
 }
 
 .content {
-    padding: 2rem;
+    padding: 1.25rem;
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     color: white;
     letter-spacing: -0.025em;
 }
 
 .subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
     font-weight: 400;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     animation: fadeIn 0.8s ease-out;
 }
 
 label {
     display: block;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     font-weight: 500;
     font-size: 0.875rem;
     color: var(--text-primary);
@@ -199,11 +250,10 @@ label {
 
 textarea {
     width: 100%;
-    min-height: 200px;
-    padding: 1rem;
+    padding: 0.75rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-family: inherit;
     resize: vertical;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -211,6 +261,11 @@ textarea {
     color: var(--text-primary);
     outline: none;
 }
+
+textarea#inputText {
+    min-height: 160px;
+}
+
 
 textarea:focus {
     border-color: var(--focus-ring);
@@ -222,36 +277,17 @@ textarea::placeholder {
     color: var(--text-muted);
 }
 
-.model-select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    font-family: inherit;
-    background: var(--surface);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-}
-
-.model-select:focus {
-    border-color: var(--focus-ring);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset);
-    outline: none;
-}
 
 .btn {
     background: var(--primary);
     color: white;
-    padding: 0.875rem 2rem;
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-sm);
     position: relative;
@@ -286,8 +322,8 @@ textarea::placeholder {
 }
 
 .result-section {
-    margin-top: 2rem;
-    padding: 2rem;
+    margin-top: 1.25rem;
+    padding: 1.25rem;
     background: var(--background-secondary);
     border-radius: var(--radius);
     border: 1px solid var(--border);
@@ -296,20 +332,20 @@ textarea::placeholder {
 
 .result-section h3 {
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     color: var(--accent);
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
 }
 
 .result-text {
     background: var(--surface-elevated);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     white-space: pre-wrap;
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: var(--text-primary);
     box-shadow: var(--shadow-sm);
 }
@@ -325,8 +361,8 @@ textarea::placeholder {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
+    margin-bottom: 0.75rem;
+    gap: 0.75rem;
 }
 
 .copy-button {
@@ -417,7 +453,7 @@ textarea[aria-invalid="true"]:focus {
     display: none;
     color: var(--primary);
     font-weight: 500;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     animation: pulse 2s infinite;
 }
 
@@ -426,32 +462,9 @@ textarea[aria-invalid="true"]:focus {
     50% { opacity: 0.5; }
 }
 
-.instructions {
-    background: var(--primary-light);
-    border: 1px solid var(--border);
-    padding: 1.5rem;
-    border-radius: var(--radius-sm);
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.instructions p {
-    color: var(--text-secondary);
-    font-weight: 500;
-    font-size: 1.1rem;
-}
-
-.instructions ul {
-    margin: 10px 0;
-    padding-left: 20px;
-}
-
-.instructions li {
-    margin-bottom: 5px;
-}
 
 .diff-controls {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     text-align: center;
 }
 
@@ -559,13 +572,6 @@ textarea[aria-invalid="true"]:focus {
     opacity: 0.8;
 }
 
-.diff-line {
-    margin: 2px 0;
-    padding: 2px 4px;
-    border-radius: 2px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
 
 .prompt-header {
     display: flex;
@@ -581,9 +587,9 @@ textarea[aria-invalid="true"]:focus {
 }
 
 .model-label {
-    font-weight: bold;
-    color: #555;
-    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }
 
 .current-model {
@@ -610,36 +616,14 @@ textarea[aria-invalid="true"]:focus {
     border-color: var(--focus-ring);
 }
 
-.model-toggle-btn {
-    background: var(--background-secondary);
-    border: 1px solid var(--border);
-    padding: 0.375rem 0.75rem;
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-}
-
-.model-toggle-btn:hover {
-    background: var(--primary-light);
-    border-color: var(--border-hover);
-    color: var(--text-primary);
-}
-
-.model-toggle-btn:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset);
-    border-color: var(--focus-ring);
-}
 
 .model-select-hidden {
-    font-size: 12px;
-    padding: 4px 8px;
-    border: 1px solid #007bff;
-    border-radius: 4px;
-    background-color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--focus-ring);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--text-primary);
 }
 
 .prompt-toggle-btn {
@@ -667,22 +651,22 @@ textarea[aria-invalid="true"]:focus {
 }
 
 .prompt-container {
-    margin-top: 10px;
+    margin-top: 0.75rem;
     animation: slideDown 0.3s ease-out;
 }
 
 .prompt-textarea {
     width: 100%;
     min-height: 200px;
-    padding: 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 5px;
-    font-size: 14px;
-    font-family: 'Courier New', Consolas, monospace;
+    padding: 1rem;
+    border: 1px solid var(--text-muted);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
     resize: vertical;
-    box-sizing: border-box;
-    background-color: #f8f9fa;
-    color: #293037;
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .prompt-textarea:focus {
@@ -718,23 +702,23 @@ textarea[aria-invalid="true"]:focus {
 /* Responsive Design */
 @media (max-width: 768px) {
     body {
-        padding: 1rem 0.5rem;
+        padding: 0.75rem 0.5rem;
     }
     
     .header {
-        padding: 1rem 1rem;
+        padding: 0.75rem;
     }
     
     .content {
-        padding: 1.5rem;
+        padding: 1rem;
     }
     
     h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
     
     .subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
     
     .btn {
@@ -752,7 +736,6 @@ textarea[aria-invalid="true"]:focus {
     }
     
     .current-model,
-    .model-toggle-btn,
     .prompt-toggle-btn {
         min-height: 44px; /* Touch target size */
         padding: 0.75rem 1rem;
@@ -778,6 +761,18 @@ textarea[aria-invalid="true"]:focus {
         left: 16px;
         font-size: 1.125rem;
         padding: 12px 16px;
+    }
+    
+    .back-button-container {
+        position: static;
+        margin-bottom: 1rem;
+        padding: 0 1rem;
+    }
+    
+    .back-button {
+        min-height: 44px; /* Touch target size */
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
     }
     
     .top-choosers {
@@ -808,10 +803,6 @@ textarea[aria-invalid="true"]:focus {
 }
 
 @media (max-width: 480px) {
-    .instructions p {
-        font-size: 1rem;
-    }
-    
     .model-selection {
         flex-direction: column;
         align-items: flex-start;
@@ -861,6 +852,163 @@ textarea[aria-invalid="true"]:focus {
     
     .skip-link {
         transition: none;
+    }
+}
+
+/* Start Page Styles */
+.start-page {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.welcome-section {
+    margin-bottom: 3rem;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.welcome-section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+}
+
+.welcome-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.feature-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.feature-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-hover);
+}
+
+.feature-tile:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset), var(--shadow-lg);
+    border-color: var(--focus-ring);
+}
+
+.feature-tile:active {
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.5rem;
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-tile:hover .feature-icon {
+    background: var(--primary-hover);
+    transform: scale(1.05);
+}
+
+.feature-icon svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.feature-tile h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+}
+
+.feature-tile p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.feature-arrow {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-tile:hover .feature-arrow {
+    color: var(--primary);
+    transform: translateX(4px);
+}
+
+/* Responsive adjustments for start page */
+@media (max-width: 768px) {
+    .start-page {
+        padding: 1rem;
+    }
+    
+    .welcome-section h2 {
+        font-size: 1.75rem;
+    }
+    
+    .welcome-description {
+        font-size: 1rem;
+    }
+    
+    .feature-tile {
+        padding: 1.5rem;
+        text-align: left;
+    }
+    
+    .feature-tile h3 {
+        font-size: 1.25rem;
+    }
+    
+    .feature-icon {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    .feature-arrow {
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.25rem;
     }
 }
 

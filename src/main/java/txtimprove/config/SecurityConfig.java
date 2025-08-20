@@ -19,6 +19,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .anyRequest().permitAll()
             )
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.disable())
             .csrf(AbstractHttpConfigurer::disable) // CSRF not needed for this simple app
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.deny())

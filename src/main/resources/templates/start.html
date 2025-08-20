@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" th:content="#{page.description}">
+    <title th:text="#{page.title}">Text Verbesserung - KI-gestützte deutsche Textoptimierung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <a href="#main-content" class="skip-link" th:text="#{accessibility.skipToMainContent}">Zum Hauptinhalt springen</a>
+    
+    <!-- Top Choosers -->
+    <div class="top-choosers">
+        <!-- Theme Chooser -->
+        <div class="theme-chooser">
+            <button type="button" class="theme-btn" id="light-theme-btn"
+                    onclick="switchTheme('light')"
+                    th:title="#{theme.title.light}"
+                    th:text="#{theme.light}">Hell</button>
+            <button type="button" class="theme-btn" id="dark-theme-btn"
+                    onclick="switchTheme('dark')"
+                    th:title="#{theme.title.dark}"
+                    th:text="#{theme.dark}">Dunkel</button>
+        </div>
+        
+        <!-- Language Chooser -->
+        <div class="language-chooser">
+            <button type="button" class="lang-btn" 
+                    th:classappend="${#locale.language == 'de'} ? 'active' : ''" 
+                    onclick="switchLanguage('de')"
+                    title="Deutsch">DE</button>
+            <button type="button" class="lang-btn" 
+                    th:classappend="${#locale.language == 'en'} ? 'active' : ''" 
+                    onclick="switchLanguage('en')"
+                    title="English">EN</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 th:text="#{header.title}">✨ Text Verbesserung</h1>
+            <p class="subtitle" th:text="#{header.subtitle}">für deutsche Texte mit KI-Unterstützung</p>
+        </header>
+        
+        <main id="main-content" class="content start-page" role="main">
+            <div class="welcome-section">
+                <h2 th:text="#{start.welcome.title}">Willkommen</h2>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-tile" onclick="location.href='/improve'">
+                    <div class="feature-icon">✨
+                    </div>
+                    <h3 th:text="#{start.feature.textImprovement.title}">Text Verbesserung</h3>
+                    <p th:text="#{start.feature.textImprovement.description}">
+                        Verbessern Sie deutsche Texte mit KI-Unterstützung für bessere Grammatik, Stil und Lesbarkeit.
+                    </p>
+                    <div class="feature-arrow">→</div>
+                </div>
+                
+                <div class="feature-tile" onclick="location.href='/lineops'">
+                    <div class="feature-icon">📋
+                    </div>
+                    <h3 th:text="#{start.feature.lineOperations.title}">Zeilen-Operationen</h3>
+                    <p th:text="#{start.feature.lineOperations.description}">
+                        Wenden Sie KI-gestützte Operationen auf jede Zeile einer Textdatei an. Perfekt für Batch-Bearbeitung.
+                    </p>
+                    <div class="feature-arrow">→</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        // Internationalized messages for JavaScript
+        var messages = {
+            'form.submit.processing': /*[[#{form.submit.processing}]]*/ '⏳ Verarbeitung läuft...',
+            'loading.processingWait': /*[[#{loading.processingWait}]]*/ 'Text wird verarbeitet. Bitte warten...',
+            'error.emptyText': /*[[#{error.emptyText}]]*/ 'Bitte geben Sie einen Text ein, der verbessert werden soll.',
+            'error.minLength': /*[[#{error.minLength}]]*/ 'Der Text muss mindestens 3 Zeichen lang sein.',
+            'error.maxLength': /*[[#{error.maxLength}]]*/ 'Der Text darf maximal 10.000 Zeichen lang sein.',
+            'error.diffLibraryNotLoaded': /*[[#{error.diffLibraryNotLoaded}]]*/ 'Diff library not loaded. Please refresh the page.',
+            'form.promptToggle.hide': /*[[#{form.promptToggle.hide}]]*/ 'Prompt ausblenden',
+            'form.promptToggle.show': /*[[#{form.promptToggle.show}]]*/ 'Prompt anzeigen',
+            'results.diff.originalText': /*[[#{results.diff.originalText}]]*/ 'Originaltext',
+            'results.diff.improvedText': /*[[#{results.diff.improvedText}]]*/ 'Verbesserter Text',
+            'results.copy.button': /*[[#{results.copy.button}]]*/ 'In Zwischenablage kopieren',
+            'results.copy.success': /*[[#{results.copy.success}]]*/ 'Text kopiert!',
+            'results.copy.error': /*[[#{results.copy.error}]]*/ 'Kopieren fehlgeschlagen',
+            'announce.promptOpened': /*[[#{announce.promptOpened}]]*/ 'Prompt-Bereich geöffnet',
+            'announce.promptClosed': /*[[#{announce.promptClosed}]]*/ 'Prompt-Bereich geschlossen',
+            'announce.modelSelectionOpened': /*[[#{announce.modelSelectionOpened}]]*/ 'Modellauswahl geöffnet',
+            'announce.modelSelected': /*[[#{announce.modelSelected}]]*/ 'Modell gewählt: {0}',
+            'announce.diffModeChanged.sideBySide': /*[[#{announce.diffModeChanged.sideBySide}]]*/ 'Ansicht gewechselt zu Nebeneinander',
+            'announce.diffModeChanged.unified': /*[[#{announce.diffModeChanged.unified}]]*/ 'Ansicht gewechselt zu Vereinheitlicht',
+            'announce.textImprovementCompleted': /*[[#{announce.textImprovementCompleted}]]*/ 'Textverbesserung abgeschlossen. Ergebnisse verfügbar.',
+            'announce.error': /*[[#{announce.error}]]*/ 'Fehler: {0}'
+        };
+    </script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
