@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +34,7 @@ public class ModelDiscoveryService {
         this.objectMapper = new ObjectMapper();
     }
 
+    @Cacheable(value = "modelCache", key = "'availableModels'")
     public List<String> getAvailableModels() {
         try {
             String modelsUrl = baseUrl.endsWith("/") ? baseUrl + "v1/models" : baseUrl + "/v1/models";

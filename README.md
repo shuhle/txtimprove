@@ -6,6 +6,8 @@
 
 A Spring Boot application that uses AI models to improve German text with visual diff comparison.
 
+<img src="docs/screenshot.png" alt="Application Screenshot" width="600">
+
 ## 🌟 Features
 
 - **AI-powered text improvement** for German and English language
@@ -50,6 +52,8 @@ The application can be configured using environment variables:
 | `OPENAI_API_KEY` | `not-needed` | API key for OpenAI-compatible server |
 | `OPENAI_BASE_URL` | `http://localhost:1234/` | Base URL of OpenAI-compatible server |
 | `DEFAULT_MODEL` | `local-model` | Fallback model name |
+| `AI_TEMPERATURE` | `0.1` | AI model temperature (0.0-2.0, lower = more deterministic) |
+| `CACHE_MODEL_DISCOVERY_DURATION_MINUTES` | `5` | Duration in minutes to cache model discovery results |
 
 ### Example Configuration
 
@@ -57,6 +61,8 @@ The application can be configured using environment variables:
 export OPENAI_BASE_URL="http://your-server:8080/"
 export OPENAI_API_KEY="your-api-key"
 export DEFAULT_MODEL="your-preferred-model"
+export AI_TEMPERATURE="0.3"
+export CACHE_MODEL_DISCOVERY_DURATION_MINUTES="10"
 ```
 
 ## Running the Application
