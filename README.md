@@ -4,7 +4,7 @@
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
-A Spring Boot application that uses AI models to improve German text with visual diff comparison.
+A Spring Boot application that uses AI models to improve German or English text with visual diff comparison.
 
 <img src="docs/screenshot.png" alt="Application Screenshot" width="600">
 
@@ -35,7 +35,7 @@ open http://localhost:8080
 
 ## 💡 How It Works
 
-1. **Enter Text**: Input German text that needs improvement (emails, documents, etc.)
+1. **Enter Text**: Input German or English text that needs improvement (emails, documents, etc.)
 2. **Select Model**: Choose from available AI models detected from your server
 3. **Customize Prompt**: Optionally modify the AI prompt for specific requirements
 4. **Get Results**: View improved text with character-level diff highlighting changes
