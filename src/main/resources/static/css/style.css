@@ -277,6 +277,98 @@ textarea::placeholder {
     color: var(--text-muted);
 }
 
+/* N-Shot side-by-side inputs */
+.shot-inputs {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.shot-input-half {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .shot-inputs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .shot-input-half {
+        margin-bottom: 1rem;
+    }
+}
+
+/* N-Shot page specific styling */
+.shot-pair {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    animation: fadeIn 0.8s ease-out;
+}
+
+.shot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.shot-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.remove-shot-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem;
+    border-radius: var(--radius-xs);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.7;
+}
+
+.remove-shot-btn:hover {
+    opacity: 1;
+    background: var(--background-secondary);
+    transform: scale(1.1);
+}
+
+.shot-controls {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.add-shot-btn {
+    background: var(--background-secondary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.add-shot-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.add-shot-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset);
+    border-color: var(--focus-ring);
+}
 
 .btn {
     background: var(--primary);
