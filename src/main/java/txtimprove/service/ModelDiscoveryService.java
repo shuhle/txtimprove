@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.cache.annotation.Cacheable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,8 @@ import java.util.Collections;
 
 @Service
 public class ModelDiscoveryService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ModelDiscoveryService.class);
 
     @Value("${spring.ai.openai.base-url}")
     private String baseUrl;
@@ -58,9 +62,12 @@ public class ModelDiscoveryService {
             
         } catch (RestClientException e) {
             // Log error without exposing sensitive information
-            System.err.println("Failed to fetch models from API: " + (e.getMessage() != null ? e.getMessage().replaceAll("(?i)(key|token|password)=[^\\s]*", "$1=***") : "Unknown error"));
+            String sanitizedMessage = e.getMessage() != null ? 
+                e.getMessage().replaceAll("(?i)(key|token|password)=[^\\s]*", "$1=***") : 
+                "Unknown network error";
+            logger.warn("Failed to fetch models from API: {}", sanitizedMessage);
         } catch (Exception e) {
-            System.err.println("Error parsing models response: " + (e.getMessage() != null ? e.getMessage() : "Unknown parsing error"));
+            logger.error("Error parsing models response", e);
         }
         
         // Fallback to default model if API call fails

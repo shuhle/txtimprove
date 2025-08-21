@@ -43,35 +43,43 @@
         </div>
     </div>
 
-    <!-- Back Button -->
-    <div class="back-button-container">
-        <a href="/" class="back-button" th:title="#{navigation.back.title}">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
-            </svg>
-            <span th:text="#{navigation.back}">Zurück</span>
-        </a>
-    </div>
 
     <div class="container">
         <header class="header" role="banner">
             <h1 th:text="#{header.title}">✨ Text Verbesserung</h1>
-            <p class="subtitle" th:text="#{header.subtitle}">für deutsche Texte mit KI-Unterstützung</p>
         </header>
         <main id="main-content" class="content" role="main">
         
         <form th:action="@{/improve}" method="post" onsubmit="showLoading()" role="form" aria-labelledby="form-heading">
             <h2 id="form-heading" class="visually-hidden" th:text="#{accessibility.visuallyHiddenFormHeading}">Textverbesserung</h2>
             <div class="form-group">
-                <label for="inputText" th:text="#{form.inputText.label}">Text (Deutsch):</label>
-                <textarea 
-                    id="inputText" 
-                    name="inputText" 
-                    th:placeholder="#{form.inputText.placeholder}"
-                    th:text="${inputText}"
-                    required
-                    aria-describedby="inputText-help"
-                    aria-invalid="false"></textarea>
+                <div class="textarea-header">
+                    <label for="inputText" th:text="#{form.inputText.label}">Text (Deutsch):</label>
+                    <div class="textarea-buttons">
+                        <button type="button" class="textarea-btn clear-btn" onclick="clearTextarea()" th:title="#{form.inputText.clear.title}">
+                            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/>
+                            </svg>
+                            <span th:text="#{form.inputText.clear}">Löschen</span>
+                        </button>
+                        <button type="button" class="textarea-btn paste-btn" onclick="pasteToTextarea()" th:title="#{form.inputText.paste.title}">
+                            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h4.5C11.216 0 12 .784 12 1.75v1.5c0 .216-.168.389-.375.389H4.375A.378.378 0 0 1 4 3.25V1.75ZM5.75 1.5a.25.25 0 0 0-.25.25v.75c0 .138.112.25.25.25h4.5a.25.25 0 0 0 .25-.25v-.75a.25.25 0 0 0-.25-.25h-4.5ZM2 4.75C2 3.784 2.784 3 3.75 3H4v.389c0 .872.728 1.611 1.625 1.611h4.75c.897 0 1.625-.739 1.625-1.611V3h.25C13.216 3 14 3.784 14 4.75v8.5A1.75 1.75 0 0 1 12.25 15h-8.5A1.75 1.75 0 0 1 2 13.25v-8.5ZM3.75 4.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25h-8.5Z"/>
+                            </svg>
+                            <span th:text="#{form.inputText.paste}">Einfügen</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="textarea-container">
+                    <textarea 
+                        id="inputText" 
+                        name="inputText" 
+                        th:placeholder="#{form.inputText.placeholder}"
+                        th:text="${inputText}"
+                        required
+                        aria-describedby="inputText-help"
+                        aria-invalid="false"></textarea>
+                </div>
                 <div id="inputText-help" class="visually-hidden" th:text="#{accessibility.visuallyHiddenInputHelp}">Geben Sie den deutschen Text ein, den Sie verbessern möchten</div>
             </div>
             
@@ -164,7 +172,7 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
 
     <script th:inline="javascript">
         // Internationalized messages for JavaScript
-        var messages = {
+        window.messages = {
             'form.submit.processing': /*[[#{form.submit.processing}]]*/ '⏳ Verarbeitung läuft...',
             'loading.processingWait': /*[[#{loading.processingWait}]]*/ 'Text wird verarbeitet. Bitte warten...',
             'error.emptyText': /*[[#{error.emptyText}]]*/ 'Bitte geben Sie einen Text ein, der verbessert werden soll.',
@@ -185,7 +193,11 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
             'announce.diffModeChanged.sideBySide': /*[[#{announce.diffModeChanged.sideBySide}]]*/ 'Ansicht gewechselt zu Nebeneinander',
             'announce.diffModeChanged.unified': /*[[#{announce.diffModeChanged.unified}]]*/ 'Ansicht gewechselt zu Vereinheitlicht',
             'announce.textImprovementCompleted': /*[[#{announce.textImprovementCompleted}]]*/ 'Textverbesserung abgeschlossen. Ergebnisse verfügbar.',
-            'announce.error': /*[[#{announce.error}]]*/ 'Fehler: {0}'
+            'announce.error': /*[[#{announce.error}]]*/ 'Fehler: {0}',
+            'form.inputText.clear': /*[[#{form.inputText.clear}]]*/ 'Löschen',
+            'form.inputText.paste': /*[[#{form.inputText.paste}]]*/ 'Einfügen',
+            'form.inputText.paste.success': /*[[#{results.copy.success}]]*/ 'Text kopiert!',
+            'form.inputText.paste.error': /*[[#{results.copy.error}]]*/ 'Kopieren fehlgeschlagen'
         };
     </script>
     <script th:src="@{/js/main.js}"></script>

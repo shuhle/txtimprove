@@ -1,27 +1,5 @@
-// Internationalized messages for JavaScript
-var messages = {
-    'form.submit.processing': '⏳ Verarbeitung läuft...',
-    'loading.processingWait': 'Text wird verarbeitet. Bitte warten...',
-    'error.emptyText': 'Bitte geben Sie einen Text ein, der verbessert werden soll.',
-    'error.minLength': 'Der Text muss mindestens 3 Zeichen lang sein.',
-    'error.maxLength': 'Der Text darf maximal 10.000 Zeichen lang sein.',
-    'error.diffLibraryNotLoaded': 'Diff library not loaded. Please refresh the page.',
-    'form.promptToggle.hide': 'Prompt ausblenden',
-    'form.promptToggle.show': 'Prompt anzeigen',
-    'results.diff.originalText': 'Originaltext',
-    'results.diff.improvedText': 'Verbesserter Text',
-    'results.copy.button': 'In Zwischenablage kopieren',
-    'results.copy.success': 'Text kopiert!',
-    'results.copy.error': 'Kopieren fehlgeschlagen',
-    'announce.promptOpened': 'Prompt-Bereich geöffnet',
-    'announce.promptClosed': 'Prompt-Bereich geschlossen',
-    'announce.modelSelectionOpened': 'Modellauswahl geöffnet',
-    'announce.modelSelected': 'Modell gewählt: {0}',
-    'announce.diffModeChanged.sideBySide': 'Ansicht gewechselt zu Nebeneinander',
-    'announce.diffModeChanged.unified': 'Ansicht gewechselt zu Vereinheitlicht',
-    'announce.textImprovementCompleted': 'Textverbesserung abgeschlossen. Ergebnisse verfügbar.',
-    'announce.error': 'Fehler: {0}'
-};
+// Internationalized messages for JavaScript - will be set by the HTML template
+var messages = window.messages || {};
 
 function getMessage(key, ...args) {
     let message = messages[key] || key;
@@ -129,10 +107,7 @@ function showLoading() {
 }
 
 function validateForm() {
-    // Check which form we're on
     const inputText = document.getElementById('inputText');
-    const fileContent = document.getElementById('fileContent');
-    const lineInstruction = document.getElementById('lineInstruction');
     
     // Clear previous errors
     clearFormErrors();
@@ -156,36 +131,6 @@ function validateForm() {
         // Check maximum length (reasonable limit)
         if (textValue.length > 10000) {
             showFieldError(inputText, getMessage('error.maxLength'));
-            return false;
-        }
-    }
-    
-    // Line operations form validation
-    if (fileContent && lineInstruction) {
-        const fileContentValue = fileContent.value.trim();
-        const lineInstructionValue = lineInstruction.value.trim();
-        
-        // Check if file content is empty
-        if (!fileContentValue) {
-            showFieldError(fileContent, 'Please enter file content.');
-            return false;
-        }
-        
-        // Check if line instruction is empty
-        if (!lineInstructionValue) {
-            showFieldError(lineInstruction, 'Please enter a line operation instruction.');
-            return false;
-        }
-        
-        // Check file content length limit
-        if (fileContentValue.length > 50000) {
-            showFieldError(fileContent, 'File content is too long (max. 50,000 characters).');
-            return false;
-        }
-        
-        // Check line instruction length limit
-        if (lineInstructionValue.length > 500) {
-            showFieldError(lineInstruction, 'Instruction is too long (max. 500 characters).');
             return false;
         }
     }
@@ -231,19 +176,6 @@ function clearFormErrors() {
         inputText.setAttribute('aria-invalid', 'false');
         inputText.setAttribute('aria-describedby', 'inputText-help');
     }
-    
-    // Reset ARIA attributes for line operations form
-    const fileContent = document.getElementById('fileContent');
-    if (fileContent) {
-        fileContent.setAttribute('aria-invalid', 'false');
-        fileContent.setAttribute('aria-describedby', 'fileContent-help');
-    }
-    
-    const lineInstruction = document.getElementById('lineInstruction');
-    if (lineInstruction) {
-        lineInstruction.setAttribute('aria-invalid', 'false');
-        lineInstruction.setAttribute('aria-describedby', 'lineInstruction-help');
-    }
 }
 
 let currentDiffMode = 'side-by-side';
@@ -271,6 +203,7 @@ function toggleDiffMode(mode) {
     renderDiff();
 }
 
+
 function renderDiff() {
     const originalText = document.getElementById('original-text')?.textContent || '';
     const improvedText = document.getElementById('improved-text')?.textContent || '';
@@ -288,8 +221,8 @@ function renderDiff() {
         return;
     }
     
-    // Use word-level diff for better readability
-    const diff = Diff.diffWords(originalText, improvedText);
+    // Use line-by-line diff with word-level granularity to preserve newlines
+    const diff = Diff.diffWordsWithSpace(originalText, improvedText);
     
     if (currentDiffMode === 'unified') {
         renderUnifiedDiff(diff, container);
@@ -308,7 +241,8 @@ function renderUnifiedDiff(diff, container) {
         const className = part.added ? 'diff-added' : 
                         part.removed ? 'diff-removed' : 'diff-unchanged';
         span.className = className;
-        span.textContent = part.value; // Safe - uses textContent instead of innerHTML
+        // Preserve newlines by using a text node directly
+        span.appendChild(document.createTextNode(part.value));
         unifiedDiv.appendChild(span);
     });
     
@@ -343,28 +277,42 @@ function renderSideBySideDiff(originalText, improvedText, diff, container) {
     improvedColumn.appendChild(improvedHeader);
     improvedColumn.appendChild(improvedContent);
     
-    // Process diff parts safely
+    // Process diff parts with synchronized alignment
     diff.forEach(function(part) {
         if (part.added) {
-            const span = document.createElement('span');
-            span.className = 'diff-added';
-            span.textContent = part.value;
-            improvedContent.appendChild(span);
+            // Add empty placeholder to original column to maintain alignment
+            const originalPlaceholder = document.createElement('span');
+            originalPlaceholder.className = 'diff-placeholder';
+            originalPlaceholder.appendChild(document.createTextNode(''));
+            originalContent.appendChild(originalPlaceholder);
+            
+            // Add the added content to improved column
+            const improvedSpan = document.createElement('span');
+            improvedSpan.className = 'diff-added';
+            improvedSpan.appendChild(document.createTextNode(part.value));
+            improvedContent.appendChild(improvedSpan);
         } else if (part.removed) {
-            const span = document.createElement('span');
-            span.className = 'diff-removed';
-            span.textContent = part.value;
-            originalContent.appendChild(span);
+            // Add the removed content to original column
+            const originalSpan = document.createElement('span');
+            originalSpan.className = 'diff-removed';
+            originalSpan.appendChild(document.createTextNode(part.value));
+            originalContent.appendChild(originalSpan);
+            
+            // Add empty placeholder to improved column to maintain alignment
+            const improvedPlaceholder = document.createElement('span');
+            improvedPlaceholder.className = 'diff-placeholder';
+            improvedPlaceholder.appendChild(document.createTextNode(''));
+            improvedContent.appendChild(improvedPlaceholder);
         } else {
-            // Unchanged text goes to both columns
+            // Unchanged text goes to both columns at the same position
             const originalSpan = document.createElement('span');
             originalSpan.className = 'diff-unchanged';
-            originalSpan.textContent = part.value;
+            originalSpan.appendChild(document.createTextNode(part.value));
             originalContent.appendChild(originalSpan);
             
             const improvedSpan = document.createElement('span');
             improvedSpan.className = 'diff-unchanged';
-            improvedSpan.textContent = part.value;
+            improvedSpan.appendChild(document.createTextNode(part.value));
             improvedContent.appendChild(improvedSpan);
         }
     });
@@ -493,27 +441,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
-        // Real-time validation feedback for line operations form
-        const fileContent = document.getElementById('fileContent');
-        if (fileContent) {
-            fileContent.addEventListener('input', function() {
-                if (this.getAttribute('aria-invalid') === 'true') {
-                    // Clear error if user starts typing
-                    clearFormErrors();
-                }
-            });
-        }
-        
-        const lineInstruction = document.getElementById('lineInstruction');
-        if (lineInstruction) {
-            lineInstruction.addEventListener('input', function() {
-                if (this.getAttribute('aria-invalid') === 'true') {
-                    // Clear error if user starts typing
-                    clearFormErrors();
-                }
-            });
-        }
     }
     
     // Initialize diff when page loads and results are available
@@ -521,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderDiff();
         announceToScreenReader(getMessage('announce.textImprovementCompleted'));
     }
+    
     
     // Add keyboard support for copy button
     const copyButton = document.getElementById('copyButton');
@@ -533,6 +461,55 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Clear textarea functionality
+function clearTextarea() {
+    const textarea = document.getElementById('inputText');
+    if (textarea) {
+        textarea.value = '';
+        textarea.focus();
+        
+        // Clear any existing validation errors
+        clearFormErrors();
+        
+        // Announce to screen readers
+        announceToScreenReader(getMessage('form.inputText.clear') + ' - Text gelöscht');
+    }
+}
+
+// Paste to textarea functionality
+function pasteToTextarea() {
+    const textarea = document.getElementById('inputText');
+    if (!textarea) {
+        console.warn('Textarea not found');
+        return;
+    }
+
+    // Modern clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.readText().then(text => {
+            textarea.value = text;
+            textarea.focus();
+            
+            // Clear any existing validation errors
+            clearFormErrors();
+            
+            // Announce success to screen readers
+            announceToScreenReader(getMessage('form.inputText.paste') + ' - Text eingefügt');
+        }).catch(err => {
+            console.error('Clipboard API failed:', err);
+            showPasteError();
+        });
+    } else {
+        // Fallback: focus textarea and let user paste manually
+        textarea.focus();
+        announceToScreenReader('Bitte verwenden Sie Strg+V zum Einfügen');
+    }
+}
+
+function showPasteError() {
+    announceToScreenReader('Einfügen fehlgeschlagen - bitte verwenden Sie Strg+V');
+}
 
 // Copy to clipboard functionality
 function copyToClipboard() {
