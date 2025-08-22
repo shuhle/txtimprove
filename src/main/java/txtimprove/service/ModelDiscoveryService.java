@@ -121,4 +121,24 @@ public class ModelDiscoveryService {
         // Rule 3: Return first model from sorted list (deterministic)
         return models.get(0);
     }
+
+    public String getValidatedPreferredModel(List<String> availableModels, String userPreferredModel) {
+        if (availableModels == null || availableModels.isEmpty()) {
+            return "local-model";
+        }
+        
+        // First check if user's preferred model is available and valid
+        if (userPreferredModel != null && !userPreferredModel.trim().isEmpty()) {
+            String trimmedPreferred = userPreferredModel.trim();
+            if (availableModels.contains(trimmedPreferred)) {
+                logger.debug("Using user's preferred model: {}", trimmedPreferred);
+                return trimmedPreferred;
+            } else {
+                logger.debug("User's preferred model '{}' not available, falling back to default rules", trimmedPreferred);
+            }
+        }
+        
+        // Fall back to the default preference rules
+        return getPreferredModel(availableModels);
+    }
 }

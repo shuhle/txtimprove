@@ -62,12 +62,6 @@
                             </svg>
                             <span th:text="#{form.inputText.clear}">Löschen</span>
                         </button>
-                        <button type="button" class="textarea-btn paste-btn" onclick="pasteToTextarea()" th:title="#{form.inputText.paste.title}">
-                            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h4.5C11.216 0 12 .784 12 1.75v1.5c0 .216-.168.389-.375.389H4.375A.378.378 0 0 1 4 3.25V1.75ZM5.75 1.5a.25.25 0 0 0-.25.25v.75c0 .138.112.25.25.25h4.5a.25.25 0 0 0 .25-.25v-.75a.25.25 0 0 0-.25-.25h-4.5ZM2 4.75C2 3.784 2.784 3 3.75 3H4v.389c0 .872.728 1.611 1.625 1.611h4.75c.897 0 1.625-.739 1.625-1.611V3h.25C13.216 3 14 3.784 14 4.75v8.5A1.75 1.75 0 0 1 12.25 15h-8.5A1.75 1.75 0 0 1 2 13.25v-8.5ZM3.75 4.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25h-8.5Z"/>
-                            </svg>
-                            <span th:text="#{form.inputText.paste}">Einfügen</span>
-                        </button>
                     </div>
                 </div>
                 <div class="textarea-container">
@@ -107,33 +101,57 @@
                         class="prompt-textarea"
                         th:placeholder="#{form.customPrompt.placeholder}"
                         aria-describedby="prompt-help"
-                        th:text="${customPrompt}">Du bist ein professioneller Texteditor und Schreibcoach für die deutsche Sprache. 
-
-WICHTIG: Gib ausschließlich den verbesserten Text aus - ohne Erklärungen, Kommentare, Emojis, Markdown oder sonstige Zusätze.
-
-Verbessere den folgenden deutschen Text, indem du:
-1. Grammatik und Rechtschreibung korrigierst
-2. Den Stil und die Lesbarkeit verbesserst
-3. Klarheit und Präzision erhöhst
-4. Den Ton professioneller und ansprechender machst
-5. Die Struktur optimierst
-
-Behalte dabei den ursprünglichen Sinn und die Intention des Textes bei.
-Behalte die ursprüngliche Struktur und Formatierung (Absätze, Listen) bei.
-
-Ursprünglicher Text:
-{input_text}
-
-Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
+                        th:text="${customPrompt}">Prompt</textarea>
                     <div id="prompt-help" class="visually-hidden" th:text="#{accessibility.visuallyHiddenPromptHelp}">Anpassung des KI-Prompts für die Textverbesserung</div>
                 </div>
             </div>
             
-            <button type="submit" class="btn" id="submitBtn" aria-describedby="loading" th:text="#{form.submit.button}">🚀 Text verbessern</button>
+            <div class="button-group">
+                <button type="submit" class="btn" id="submitBtn" aria-describedby="loading" th:text="#{form.submit.button}">🚀 Text verbessern</button>
+                <button type="button" class="btn btn-secondary" id="externalLlmBtn" onclick="showExternalLlmModal()" th:text="#{form.externalLlm.button}">📋 Externes LLM verwenden</button>
+            </div>
             <div class="loading" id="loading" role="status" aria-live="polite" aria-atomic="true" th:text="#{loading.processing}">⏳ Text wird verarbeitet...</div>
             
             <div th:if="${error}" class="error" role="alert" aria-live="assertive" th:text="${error}"></div>
         </form>
+
+        <!-- External LLM Modal -->
+        <div id="externalLlmModal" class="modal" style="display: none;" role="dialog" aria-labelledby="external-llm-heading" aria-modal="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="external-llm-heading" th:text="#{form.externalLlm.title}">Externes LLM verwenden</h3>
+                    <button type="button" class="modal-close" onclick="hideExternalLlmModal()" aria-label="Schließen">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="external-llm-step">
+                        <h4 th:text="#{form.externalLlm.step1.title}">Schritt 1: Prompt kopieren</h4>
+                        <p th:text="#{form.externalLlm.step1.description}">Kopieren Sie den folgenden Prompt und fügen Sie ihn in Ihr externes LLM ein:</p>
+                        <div class="prompt-display-container">
+                            <div id="combinedPromptDisplay" class="prompt-display"></div>
+                            <button type="button" class="copy-button" onclick="copyPromptToClipboard()" id="copyPromptButton">
+                                <svg class="copy-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+                                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+                                </svg>
+                                <span th:text="#{form.externalLlm.copyPrompt}">Prompt kopieren</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="external-llm-step">
+                        <h4 th:text="#{form.externalLlm.step2.title}">Schritt 2: Antwort einfügen</h4>
+                        <p th:text="#{form.externalLlm.step2.description}">Fügen Sie die Antwort des externen LLMs hier ein:</p>
+                        <div class="textarea-container">
+                            <textarea id="externalLlmResponse" 
+                                     class="external-response-textarea"
+                                     th:placeholder="#{form.externalLlm.response.placeholder}"
+                                     rows="8"></textarea>
+                        </div>
+                        <button type="button" class="btn" onclick="processExternalLlmResponse()" id="processResponseBtn" th:text="#{form.externalLlm.process}">Antwort verarbeiten</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <section th:if="${improvedText}" class="result-section" role="region" aria-labelledby="results-heading">
             <div class="result-header">
@@ -170,36 +188,6 @@ Verbesserter Text (nur der Text, keine Erklärungen):</textarea>
         </main>
     </div>
 
-    <script th:inline="javascript">
-        // Internationalized messages for JavaScript
-        window.messages = {
-            'form.submit.processing': /*[[#{form.submit.processing}]]*/ '⏳ Verarbeitung läuft...',
-            'loading.processingWait': /*[[#{loading.processingWait}]]*/ 'Text wird verarbeitet. Bitte warten...',
-            'error.emptyText': /*[[#{error.emptyText}]]*/ 'Bitte geben Sie einen Text ein, der verbessert werden soll.',
-            'error.minLength': /*[[#{error.minLength}]]*/ 'Der Text muss mindestens 3 Zeichen lang sein.',
-            'error.maxLength': /*[[#{error.maxLength}]]*/ 'Der Text darf maximal 10.000 Zeichen lang sein.',
-            'error.diffLibraryNotLoaded': /*[[#{error.diffLibraryNotLoaded}]]*/ 'Diff library not loaded. Please refresh the page.',
-            'form.promptToggle.hide': /*[[#{form.promptToggle.hide}]]*/ 'Prompt ausblenden',
-            'form.promptToggle.show': /*[[#{form.promptToggle.show}]]*/ 'Prompt anzeigen',
-            'results.diff.originalText': /*[[#{results.diff.originalText}]]*/ 'Originaltext',
-            'results.diff.improvedText': /*[[#{results.diff.improvedText}]]*/ 'Verbesserter Text',
-            'results.copy.button': /*[[#{results.copy.button}]]*/ 'In Zwischenablage kopieren',
-            'results.copy.success': /*[[#{results.copy.success}]]*/ 'Text kopiert!',
-            'results.copy.error': /*[[#{results.copy.error}]]*/ 'Kopieren fehlgeschlagen',
-            'announce.promptOpened': /*[[#{announce.promptOpened}]]*/ 'Prompt-Bereich geöffnet',
-            'announce.promptClosed': /*[[#{announce.promptClosed}]]*/ 'Prompt-Bereich geschlossen',
-            'announce.modelSelectionOpened': /*[[#{announce.modelSelectionOpened}]]*/ 'Modellauswahl geöffnet',
-            'announce.modelSelected': /*[[#{announce.modelSelected}]]*/ 'Modell gewählt: {0}',
-            'announce.diffModeChanged.sideBySide': /*[[#{announce.diffModeChanged.sideBySide}]]*/ 'Ansicht gewechselt zu Nebeneinander',
-            'announce.diffModeChanged.unified': /*[[#{announce.diffModeChanged.unified}]]*/ 'Ansicht gewechselt zu Vereinheitlicht',
-            'announce.textImprovementCompleted': /*[[#{announce.textImprovementCompleted}]]*/ 'Textverbesserung abgeschlossen. Ergebnisse verfügbar.',
-            'announce.error': /*[[#{announce.error}]]*/ 'Fehler: {0}',
-            'form.inputText.clear': /*[[#{form.inputText.clear}]]*/ 'Löschen',
-            'form.inputText.paste': /*[[#{form.inputText.paste}]]*/ 'Einfügen',
-            'form.inputText.paste.success': /*[[#{results.copy.success}]]*/ 'Text kopiert!',
-            'form.inputText.paste.error': /*[[#{results.copy.error}]]*/ 'Kopieren fehlgeschlagen'
-        };
-    </script>
     <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

@@ -1,8 +1,72 @@
-// Internationalized messages for JavaScript - will be set by the HTML template
-var messages = window.messages || {};
+// Internationalized messages for JavaScript - loaded from backend
+var messages = {};
+
+// Pseudoverbs for different languages
+var pseudoverbs = {
+    de: [
+        'Schnarchzimpeln', 'Käsefußwackeln', 'Bettmüffelwummern', 'Morgenmurmeln', 'Kaffeekleckern', 'Schnoddermurksen', 'Brillenglotzglucksen', 'Nudelschlürfeln', 'Bauchgrummeln', 'Löffelklappern',
+        'Sockensammeln', 'Käsemuckelwälzen', 'Sockenmiefeln', 'Achselschwitzeln', 'Mundmuffelstinkern', 'Kuschelkissenwerkeln', 'Ohrenschmalzlöffeln', 'Zahnsteinknabbern', 'Kopfschuppenschütteln', 'Zehenwackeln',
+        'Brezeltwisten', 'Lebkuchenkrümeln', 'Sauerkrautschmausen', 'Senftupfendtupfen', 'Brezelpretzeldrehen', 'Bierbäuchlehuppeln', 'Pfannkuchenplattklopfen', 'Spätzleschlabberln', 'Kartoffelpüreestampfen', 'Apfelstrudelmampfen',
+        'Katzenjammermaunzen', 'Weltschmerzdösen', 'Fernwehseufzen', 'Heimwehschluchzen', 'Fingerspitzengefühlern', 'Verschlimmbessern', 'Verschleckputzen', 'Verschusseln', 'Verbesserwissern', 'Weicheierschmuseln',
+        'Pantoffelheldentapseln', 'Sesselkleckern', 'Kissenschlachtwälzen', 'Fernbedienungsucheln', 'Couchpotatoing', 'Schweinehundbesiegeln', 'Prokrastiniereln', 'Gammeldöseln', 'Faulpelzschlurfen', 'Nichtstunherumhängeln',
+        'Brotkrumenkrümeln', 'Nudelholzrollen', 'Teigknetenwummern', 'Gemüseschnippeln', 'Salatschleudern', 'Avocadozerstampfen', 'Tofuwürfeln', 'Quinoaquellen', 'Chiasamenschlürfen', 'Mandelmilchschlabbern',
+        'Smoothiemixen', 'Hummusdippeln', 'Kichererbsenkrümeln', 'Vollkornknuspern', 'Haferflockenstreuen', 'Linsenkochwerkeln', 'Hirseschrotmahlen', 'Süßkartoffelstampfen', 'Granatapfelentkernen', 'Coconutöffnen',
+        'Oktoberfestgrölen', 'Karnevalsjöhlen', 'Schützenfestpolkern', 'Volksfestschunkeln', 'Weihnachtsmarktglühweinschlürfen', 'Osterfeueranzünden', 'Pfingstbaumklettern', 'Himmelfahrtbollerwagenschieben', 'Silvesterkrachern', 'Neujahrkaterverkriechen',
+        'Hausschlappenschlurfen', 'Gartenzwergaufstellen', 'Kehrwocheputzen', 'Sonntagsspaziergehen', 'Mittagsschlafhalten', 'Tagesschauglotzen', 'Tatortstarren', 'Rosamundpilchergucken', 'Bergdoktorsabbern', 'Lindenstraßeleiden',
+        'Staumeldenabhören', 'Wetterberichtverfolgen', 'Bundesligafiebern', 'Formel1brummen', 'Skispringenspannen', 'Biathlonschießen', 'Handballprellen', 'Fußballgrölen', 'Eishockeykloppen', 'Tennisächzen',
+        'Mecklenburgerplattschnacken', 'Bayerischbabbeln', 'Sächsischnuscheln', 'Kölschreden', 'Berlinerschnauzen', 'Schwäbischschwätzen', 'Plattdeutschlallen', 'Österreichischgriaßdiegott', 'Schweizerdütschröhrlen', 'Elsässischbredouillieren',
+        'Spargelsaisonzelebrieren', 'Erdbeersaisonschlecken', 'Kürbissaisonschnitzen', 'Kirschkernspucken', 'Apfelpflücken', 'Birnenschnabulieren', 'Zwetschgenknabbern', 'Johannisbeerenzupfen', 'Himbeernaschen', 'Brombeerklauen',
+        'Adventskranzanzünden', 'Nikolausstrumpfhängen', 'Ostereierverstecken', 'Pfingstblumenstecken', 'Maibaumumtanzen', 'Johannisfeuerspringen', 'Martinsgansbratenschmauß', 'Barbarazweigeschneiden', 'Andreasölgießen', 'Katharinenraddrehen',
+        'Semesterferien-gammeln', 'BAföG-rechnen', 'Mensa-ekeln', 'Vorlesung-schwänzen', 'Klausur-aufschieben', 'Uni-bibliothek-campieren', 'WG-putzen', 'Pfandflaschen-sammeln', 'Nudeln-mit-ketchup-essen', 'Eltern-anpumpen',
+        'Beamtendeutschverfassen', 'Antragsformulareausfüllen', 'Amtsstubenwarten', 'Bürokratiedschungeldurchkämpfen', 'Steuererklärungprokrastinieren', 'GEZ-zahlen-ärgern', 'Rundfunkbeitragverfluchen', 'Paragrafenreiternerven', 'Zuständigkeitenpingpong', 'Dienstwegeinhalten'
+    ],
+    en: [
+        'Wigglewhoppering', 'Gigglesnoofling', 'Chucklesnorting', 'Bellylaugh-bouncing', 'Snickerdoodling', 'Guffawgiggling', 'Chortlechuckling', 'Titterwaggling', 'Hohohohugging', 'Heehawing',
+        'Derpiderping', 'Sillybillying', 'Goofygoofing', 'Nincompooping', 'Kookywhackadoodling', 'Looneytoons', 'Bonkersbananaing', 'Wackywhimsying', 'Zanyzoinking', 'Crazycoconutting',
+        'Shenaniganing', 'Tomfoolering', 'Hijinksing', 'Hullaballooing', 'Ruckusrumpusing', 'Ballyhoohooing', 'Hoopdedooing', 'Whoopdedoodahing', 'Kerfuffling', 'Brouhaha-ing',
+        'Pickle-tickling', 'Cheese-wheezing', 'Cucumber-cucumbering', 'Banana-hammocking', 'Potato-potatoing', 'Noodle-doodling', 'Muffin-stuffing', 'Cookie-rookieing', 'Cupcake-flapdaking', 'Pretzel-twisting',
+        'Gobbledygooking', 'Flapdoodling', 'Balderdashing', 'Poppycocking', 'Fiddle-faddling', 'Jibberjabbering', 'Wishy-washying', 'Willy-nillying', 'Hocus-pocusing', 'Abracadabra-ing',
+        'Couch-potatoing', 'Netflix-chilling', 'Binge-watching', 'Scroll-holing', 'Doom-scrolling', 'Procrastinoodling', 'Slack-attacking', 'Time-wasting', 'Deadline-dodging', 'Work-shirking',
+        'Veggie-burger-demolishing', 'Plant-dog-inhaling', 'Margherita-pizza-scarfing', 'Bean-taco-crunching', 'Quinoa-burrito-burritoing', 'Vegan-donut-dunking', 'Hummus-bagel-schmearing', 'Banana-pancake-stacking', 'Maple-syrup-drizzling', 'Mushroom-bacon-sizzling',
+        'Pumpkin-spice-latte-sipping', 'Avocado-toast-millennial-ing', 'Kale-smoothie-virtue-signaling', 'Kombucha-fermenting', 'Chia-seed-sprinkling', 'Quinoa-pronouncing-wrong', 'Gluten-free-evangelizing', 'Organic-everything-demanding', 'Non-GMO-label-reading', 'Houseplant-helicopter-parenting',
+        'Black-Friday-stampeding', 'Cyber-Monday-clicking', 'Prime-Day-splurging', 'Clearance-rack-diving', 'Coupon-clipping', 'Cashback-calculating', 'Price-matching', 'Return-policy-abusing', 'Warranty-extending', 'Impulse-buying',
+        'Selfie-stick-wielding', 'Instagram-filtering', 'TikTok-dancing', 'YouTube-subscribing', 'Twitter-tweeting', 'Facebook-stalking', 'LinkedIn-humble-bragging', 'Snapchat-ghosting', 'WhatsApp-group-leaving', 'Discord-moderating',
+        'Weather-app-obsessing', 'Traffic-app-cursing', 'Food-delivery-app-ordering', 'Dating-app-swiping', 'Rideshare-app-summoning', 'Banking-app-panicking', 'News-app-doom-scrolling', 'Fitness-app-lying-to', 'Language-app-abandoning', 'Meditation-app-ignoring',
+        'Monday-morning-dread-experiencing', 'Tuesday-blues-surviving', 'Wednesday-hump-day-climbing', 'Thursday-almost-there-ing', 'Friday-feeling-dancing', 'Saturday-sleeping-in', 'Sunday-scaries-anticipating', 'Weekend-warrior-ing', 'Vacation-day-hoarding', 'Sick-day-faking',
+        'Coffee-shop-WiFi-camping', 'Starbucks-line-queueing', 'Artisanal-coffee-snobing', 'Pumpkin-spice-basic-white-girling', 'Cold-brew-hipster-ing', 'Espresso-shot-downing', 'Frappuccino-brain-freezing', 'Decaf-judging', 'Fair-trade-virtue-signaling', 'Single-origin-mansplaining',
+        'Uber-eats-ordering-again', 'DoorDash-delivery-stalking', 'Grubhub-fee-calculating', 'Postmates-tipping-guilt', 'Seamless-restaurant-browsing', 'Food-truck-chasing', 'Drive-thru-lane-choosing', 'Happy-hour-timing', 'Brunch-bottomless-mimosa-ing', 'Late-night-snack-regretting',
+        'Amazon-one-click-buying', 'Same-day-delivery-expecting', 'Package-tracking-obsessing', 'Porch-pirate-paranoia', 'Return-label-printing', 'Prime-membership-justifying', 'Warehouse-deal-hunting', 'Lightning-deal-missing', 'Wishlist-abandoning', 'Cart-leaving-forever',
+        'Zoom-meeting-muting', 'Video-call-background-blurring', 'Slack-status-emoji-choosing', 'Email-inbox-zero-failing', 'Calendar-tetris-playing', 'Meeting-fatigue-experiencing', 'Webcam-angle-adjusting', 'Home-office-pants-optional-ing', 'Virtual-background-cat-filtering', 'Screen-sharing-panic-sweating'
+    ]
+};
+
+// Load messages from backend API
+async function loadMessages() {
+    try {
+        const response = await fetch('/api/i18n/messages');
+        if (response.ok) {
+            messages = await response.json();
+        } else {
+            console.warn('Failed to load i18n messages:', response.status);
+        }
+    } catch (error) {
+        console.warn('Error loading i18n messages:', error);
+    }
+}
 
 function getMessage(key, ...args) {
-    let message = messages[key] || key;
+    // Fallback messages in case the backend hasn't loaded them yet
+    const fallbacks = {
+        'results.diff.originalText': 'Original Text',
+        'results.diff.improvedText': 'Improved Text',
+        'results.heading': 'Improved Text:',
+        'results.diff.heading': 'Detailed Changes:',
+        'results.diff.sideBySide': 'Side by Side',
+        'results.diff.unified': 'Unified',
+        'results.copy.button': 'Copy to Clipboard'
+    };
+    
+    let message = messages[key] || fallbacks[key] || key;
     if (args.length > 0) {
         args.forEach((arg, index) => {
             message = message.replace('{' + index + '}', arg);
@@ -11,10 +75,41 @@ function getMessage(key, ...args) {
     return message;
 }
 
+// Initialize messages when DOM is loaded
+document.addEventListener('DOMContentLoaded', loadMessages);
+
 function switchLanguage(lang) {
+    // Validate language parameter
+    if (lang !== 'de' && lang !== 'en') {
+        console.warn('Invalid language:', lang);
+        return;
+    }
+    
+    // Save current text input before switching
+    const inputText = document.getElementById('inputText');
+    if (inputText && inputText.value.trim()) {
+        try {
+            localStorage.setItem('preservedInputText', inputText.value);
+        } catch (e) {
+            console.warn('Could not save input text:', e);
+        }
+    }
+    
     const url = new URL(window.location);
     url.searchParams.set('lang', lang);
+    
+    // Add the preferred model to URL parameters to maintain selection
+    const storedModel = getStoredModelPreference();
+    if (storedModel) {
+        url.searchParams.set('preferredModel', storedModel);
+    }
+    
     window.location.href = url.toString();
+    
+    // Reload messages after language change
+    setTimeout(() => {
+        loadMessages();
+    }, 100);
 }
 
 function switchTheme(theme) {
@@ -84,6 +179,153 @@ function initializeTheme() {
     });
 }
 
+function initializeDiffMode() {
+    const sideBySideBtn = document.getElementById('tab-side-by-side');
+    const unifiedBtn = document.getElementById('tab-unified');
+    
+    // Only initialize if diff buttons exist (i.e., on results page)
+    if (!sideBySideBtn || !unifiedBtn) {
+        return;
+    }
+    
+    // Check for stored preference with validation
+    const storedDiffMode = localStorage.getItem('diffMode');
+    
+    if (storedDiffMode && (storedDiffMode === 'side-by-side' || storedDiffMode === 'unified')) {
+        // Use stored preference only if it's valid
+        toggleDiffMode(storedDiffMode);
+    } else {
+        // Default to side-by-side mode
+        toggleDiffMode('side-by-side');
+    }
+}
+
+function restoreInputText() {
+    const inputText = document.getElementById('inputText');
+    if (!inputText) {
+        return;
+    }
+    
+    // Check for preserved text from language switch
+    try {
+        const preservedText = localStorage.getItem('preservedInputText');
+        if (preservedText && !inputText.value.trim()) {
+            // Only restore if the textarea is currently empty
+            inputText.value = preservedText;
+            
+            // Clear the preserved text after restoring
+            localStorage.removeItem('preservedInputText');
+            
+            // Clear any existing validation errors
+            clearFormErrors();
+        }
+    } catch (e) {
+        console.warn('Could not restore input text:', e);
+    }
+}
+
+function saveModelPreference(model) {
+    // Validate model parameter
+    if (!model || typeof model !== 'string') {
+        console.warn('Invalid model for saving preference:', model);
+        return;
+    }
+    
+    try {
+        localStorage.setItem('preferredModel', model);
+    } catch (e) {
+        console.warn('Could not save model preference:', e);
+    }
+}
+
+function getStoredModelPreference() {
+    try {
+        return localStorage.getItem('preferredModel');
+    } catch (e) {
+        console.warn('Could not retrieve model preference:', e);
+        return null;
+    }
+}
+
+function getCurrentLanguage() {
+    // Check which language button is active (reflects server-side locale resolution)
+    const activeBtn = document.querySelector('.lang-btn.active');
+    if (activeBtn) {
+        const btnText = activeBtn.textContent.trim().toLowerCase();
+        if (btnText === 'en') return 'en';
+        if (btnText === 'de') return 'de';
+    }
+    
+    // Fallback: check URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang');
+    if (lang === 'en' || lang === 'de') return lang;
+    
+    // Final fallback: default to German
+    return 'de';
+}
+
+function getRandomPseudoverb() {
+    const lang = getCurrentLanguage();
+    const verbs = pseudoverbs[lang] || pseudoverbs.de;
+    
+    // Enhanced randomness using multiple entropy sources
+    const now = Date.now();
+    const mouseEntropy = (typeof window !== 'undefined' && window.performance) ? window.performance.now() : 0;
+    const textLength = document.getElementById('inputText')?.value?.length || 0;
+    
+    // Combine multiple sources for better randomness
+    const seed = (now * 1.618033988749) + (mouseEntropy * 2.718281828459) + (textLength * 3.141592653589);
+    const pseudoRandom = (Math.sin(seed) * 10000) % 1;
+    const randomValue = Math.abs(pseudoRandom);
+    
+    // Fallback to Math.random() if our calculation goes wrong
+    const finalRandom = (randomValue > 0 && randomValue < 1) ? randomValue : Math.random();
+    
+    return verbs[Math.floor(finalRandom * verbs.length)];
+}
+
+function initializeModelSelection() {
+    const modelSelect = document.getElementById('selectedModel');
+    const currentModelDisplay = document.getElementById('current-model-display');
+    
+    if (!modelSelect || !currentModelDisplay) {
+        return;
+    }
+    
+    // Check for stored model preference
+    const storedModel = getStoredModelPreference();
+    
+    if (storedModel) {
+        // Validate that the stored model is available in the current options
+        const isAvailable = Array.from(modelSelect.options).some(option => option.value === storedModel);
+        
+        if (isAvailable) {
+            // Set the stored model as selected
+            modelSelect.value = storedModel;
+            currentModelDisplay.textContent = modelSelect.options[modelSelect.selectedIndex].text;
+            
+            // If there's a form, update the hidden field as well for submission
+            const hiddenModelField = document.querySelector('input[name="selectedModel"][type="hidden"]');
+            if (hiddenModelField) {
+                hiddenModelField.value = storedModel;
+            }
+        } else {
+            // If stored model is not available, save the current default model
+            saveModelPreference(modelSelect.value);
+        }
+    } else if (modelSelect.value) {
+        // No stored preference, save the current default
+        saveModelPreference(modelSelect.value);
+    }
+    
+    // Listen for changes to the select element (including programmatic changes)
+    modelSelect.addEventListener('change', function() {
+        saveModelPreference(this.value);
+        currentModelDisplay.textContent = this.options[this.selectedIndex].text;
+    });
+}
+
 function showLoading() {
     const submitBtn = document.getElementById('submitBtn');
     const loading = document.getElementById('loading');
@@ -95,10 +337,16 @@ function showLoading() {
     }
     
     submitBtn.disabled = true;
+    const pseudoverb = getRandomPseudoverb();
+
     submitBtn.textContent = getMessage('form.submit.processing');
     submitBtn.setAttribute('aria-busy', 'true');
     loading.style.display = 'block';
-    loading.textContent = getMessage('loading.processingWait');
+    
+    // Create loading text with random pseudoverb
+    const baseMessage = getMessage('loading.processingWait');
+    //loading.innerHTML = `${baseMessage} <span class="pseudoverb">${pseudoverb}</span>...`;
+    loading.innerHTML = `${pseudoverb}, ${baseMessage}`;
     
     // Remove any existing error states
     clearFormErrors();
@@ -181,6 +429,12 @@ function clearFormErrors() {
 let currentDiffMode = 'side-by-side';
 
 function toggleDiffMode(mode) {
+    // Validate mode parameter
+    if (mode !== 'side-by-side' && mode !== 'unified') {
+        console.warn('Invalid diff mode:', mode);
+        return;
+    }
+    
     currentDiffMode = mode;
     
     // Update button states and ARIA attributes
@@ -195,6 +449,13 @@ function toggleDiffMode(mode) {
     // Update tabpanel labeling
     const diffContainer = document.getElementById('diff-container');
     diffContainer.setAttribute('aria-labelledby', `tab-${mode}`);
+    
+    // Store preference in localStorage (validated mode)
+    try {
+        localStorage.setItem('diffMode', mode);
+    } catch (e) {
+        console.warn('Could not save diff mode preference:', e);
+    }
     
     // Announce change to screen readers
     announceToScreenReader(mode === 'side-by-side' ? getMessage('announce.diffModeChanged.sideBySide') : getMessage('announce.diffModeChanged.unified'));
@@ -360,6 +621,10 @@ function toggleModelSelection() {
         currentModelDisplay.style.display = 'inline';
         currentModelDisplay.setAttribute('aria-expanded', 'false');
         currentModelDisplay.textContent = modelSelect.options[modelSelect.selectedIndex].text;
+        
+        // Save the selected model to localStorage
+        saveModelPreference(modelSelect.value);
+        
         currentModelDisplay.focus();
         announceToScreenReader(getMessage('announce.modelSelected', modelSelect.options[modelSelect.selectedIndex].text));
     }
@@ -397,15 +662,17 @@ document.addEventListener('keydown', function(e) {
         }
     }
     
-    // Escape key to close dropdowns
+    // Escape key to close dropdowns and modals
     if (e.key === 'Escape') {
         const modelSelect = document.getElementById('selectedModel');
         const promptContainer = document.getElementById('prompt-container');
+        const externalLlmModal = document.getElementById('externalLlmModal');
         
-        if (modelSelect.style.display !== 'none') {
+        if (externalLlmModal && externalLlmModal.style.display !== 'none') {
+            hideExternalLlmModal();
+        } else if (modelSelect.style.display !== 'none') {
             toggleModelSelection();
-        }
-        if (promptContainer.style.display !== 'none') {
+        } else if (promptContainer.style.display !== 'none') {
             togglePromptVisibility();
         }
     }
@@ -421,6 +688,15 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme
     initializeTheme();
+    
+    // Initialize diff mode
+    initializeDiffMode();
+    
+    // Initialize model selection
+    initializeModelSelection();
+    
+    // Restore input text if preserved from language switch
+    restoreInputText();
     const form = document.querySelector('form');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -445,8 +721,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize diff when page loads and results are available
     if (document.getElementById('original-text') && document.getElementById('improved-text')) {
-        renderDiff();
-        announceToScreenReader(getMessage('announce.textImprovementCompleted'));
+        if (Object.keys(messages).length === 0) {
+            // Messages not loaded yet, load them first
+            loadMessages().then(() => {
+                renderDiff();
+                announceToScreenReader(getMessage('announce.textImprovementCompleted'));
+            });
+        } else {
+            renderDiff();
+            announceToScreenReader(getMessage('announce.textImprovementCompleted'));
+        }
     }
     
     
@@ -477,39 +761,6 @@ function clearTextarea() {
     }
 }
 
-// Paste to textarea functionality
-function pasteToTextarea() {
-    const textarea = document.getElementById('inputText');
-    if (!textarea) {
-        console.warn('Textarea not found');
-        return;
-    }
-
-    // Modern clipboard API
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.readText().then(text => {
-            textarea.value = text;
-            textarea.focus();
-            
-            // Clear any existing validation errors
-            clearFormErrors();
-            
-            // Announce success to screen readers
-            announceToScreenReader(getMessage('form.inputText.paste') + ' - Text eingefügt');
-        }).catch(err => {
-            console.error('Clipboard API failed:', err);
-            showPasteError();
-        });
-    } else {
-        // Fallback: focus textarea and let user paste manually
-        textarea.focus();
-        announceToScreenReader('Bitte verwenden Sie Strg+V zum Einfügen');
-    }
-}
-
-function showPasteError() {
-    announceToScreenReader('Einfügen fehlgeschlagen - bitte verwenden Sie Strg+V');
-}
 
 // Copy to clipboard functionality
 function copyToClipboard() {
@@ -598,5 +849,200 @@ function fallbackCopyText(text, button, buttonText) {
         showCopyError(button, buttonText);
     } finally {
         document.body.removeChild(textarea);
+    }
+}
+
+// External LLM functionality
+function showExternalLlmModal() {
+    const modal = document.getElementById('externalLlmModal');
+    const inputText = document.getElementById('inputText').value.trim();
+    const customPrompt = document.getElementById('customPrompt').value.trim();
+    
+    // Validate that there's input text
+    if (!inputText) {
+        showFieldError(document.getElementById('inputText'), getMessage('error.emptyText'));
+        return;
+    }
+    
+    // Generate combined prompt
+    const prompt = customPrompt || getDefaultPromptText();
+    const combinedPrompt = prompt.replace('{input_text}', inputText);
+    
+    // Display the combined prompt
+    const promptDisplay = document.getElementById('combinedPromptDisplay');
+    promptDisplay.textContent = combinedPrompt;
+    
+    // Clear previous response
+    document.getElementById('externalLlmResponse').value = '';
+    
+    // Show modal
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus the modal for accessibility
+    modal.focus();
+    
+    // Add event listener to close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            hideExternalLlmModal();
+        }
+    });
+    
+    announceToScreenReader(getMessage('announce.externalLlmModalOpened'));
+}
+
+function hideExternalLlmModal() {
+    const modal = document.getElementById('externalLlmModal');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    
+    // Return focus to the external LLM button
+    document.getElementById('externalLlmBtn').focus();
+    
+    announceToScreenReader(getMessage('announce.externalLlmModalClosed'));
+}
+
+function getDefaultPromptText() {
+    // Get the current prompt from the textarea or fall back to a basic prompt
+    const customPrompt = document.getElementById('customPrompt');
+    return customPrompt.value || customPrompt.textContent || 'Please improve the following text: {input_text}';
+}
+
+function copyPromptToClipboard() {
+    const promptDisplay = document.getElementById('combinedPromptDisplay');
+    const copyButton = document.getElementById('copyPromptButton');
+    const buttonText = copyButton.querySelector('span');
+    
+    if (!promptDisplay || !copyButton) {
+        console.warn('Copy prompt elements not found');
+        return;
+    }
+    
+    const textToCopy = promptDisplay.textContent || promptDisplay.innerText;
+    
+    // Modern clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showCopySuccess(copyButton, buttonText);
+        }).catch((err) => {
+            console.error('Clipboard API failed:', err);
+            fallbackCopyText(textToCopy, copyButton, buttonText);
+        });
+    } else {
+        // Fallback for older browsers or non-secure contexts
+        fallbackCopyText(textToCopy, copyButton, buttonText);
+    }
+}
+
+function processExternalLlmResponse() {
+    const responseTextarea = document.getElementById('externalLlmResponse');
+    const processBtn = document.getElementById('processResponseBtn');
+    const inputText = document.getElementById('inputText').value.trim();
+    
+    const externalResponse = responseTextarea.value.trim();
+    
+    // Validate that there's a response
+    if (!externalResponse) {
+        showFieldError(responseTextarea, getMessage('error.emptyResponse'));
+        return;
+    }
+    
+    // Disable the button during processing
+    processBtn.disabled = true;
+    processBtn.textContent = getMessage('form.externalLlm.processing');
+    
+    try {
+        // Hide the modal
+        hideExternalLlmModal();
+        
+        // Create result display (similar to normal improvement flow)
+        displayExternalLlmResult(inputText, externalResponse);
+        
+        // Scroll to results
+        const resultSection = document.querySelector('.result-section');
+        if (resultSection) {
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        announceToScreenReader(getMessage('announce.externalLlmProcessed'));
+    } catch (error) {
+        console.error('Error processing external LLM response:', error);
+        showFieldError(responseTextarea, getMessage('error.processingFailed'));
+    } finally {
+        // Re-enable the button
+        processBtn.disabled = false;
+        processBtn.textContent = getMessage('form.externalLlm.process');
+    }
+}
+
+function displayExternalLlmResult(originalText, improvedText) {
+    // Create or update the result section
+    let resultSection = document.querySelector('.result-section');
+    
+    if (!resultSection) {
+        // Create the result section if it doesn't exist
+        resultSection = document.createElement('section');
+        resultSection.className = 'result-section';
+        resultSection.setAttribute('role', 'region');
+        resultSection.setAttribute('aria-labelledby', 'results-heading');
+        
+        // Insert after the form
+        const form = document.querySelector('form');
+        form.parentNode.insertBefore(resultSection, form.nextSibling);
+    }
+    
+    // Build the result HTML
+    resultSection.innerHTML = `
+        <div class="result-header">
+            <h2 id="results-heading">${getMessage('results.heading')}</h2>
+            <button type="button" class="copy-button" onclick="copyToClipboard()" 
+                    aria-label="Copy improved text to clipboard" 
+                    id="copyButton">
+                <svg class="copy-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+                </svg>
+                <span>${getMessage('results.copy.button')}</span>
+            </button>
+        </div>
+        <div class="result-text" role="textbox" aria-readonly="true" tabindex="0" id="resultText">${improvedText}</div>
+        
+        <div style="margin-top: 30px;">
+            <h3 id="diff-heading">${getMessage('results.diff.heading')}</h3>
+            <div class="diff-controls" role="tablist" aria-labelledby="diff-heading">
+                <button type="button" class="diff-toggle-btn active" data-mode="side-by-side" onclick="toggleDiffMode('side-by-side')" role="tab" aria-selected="true" aria-controls="diff-container" id="tab-side-by-side">${getMessage('results.diff.sideBySide')}</button>
+                <button type="button" class="diff-toggle-btn" data-mode="unified" onclick="toggleDiffMode('unified')" role="tab" aria-selected="false" aria-controls="diff-container" id="tab-unified">${getMessage('results.diff.unified')}</button>
+            </div>
+            <div id="diff-container" class="diff-container" role="tabpanel" aria-labelledby="tab-side-by-side">
+                <!-- Diff will be rendered here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Hidden elements for JavaScript to access the texts -->
+        <div id="original-text" style="display: none;">${originalText}</div>
+        <div id="improved-text" style="display: none;">${improvedText}</div>
+    `;
+    
+    // Initialize diff mode and render (ensure messages are loaded first)
+    initializeDiffMode();
+    if (Object.keys(messages).length === 0) {
+        // Messages not loaded yet, load them first
+        loadMessages().then(() => {
+            renderDiff();
+        });
+    } else {
+        renderDiff();
+    }
+    
+    // Add keyboard support for the new copy button
+    const copyButton = document.getElementById('copyButton');
+    if (copyButton) {
+        copyButton.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                copyToClipboard();
+            }
+        });
     }
 }

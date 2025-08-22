@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -40,7 +42,7 @@ public class TextImprovementController {
     }
     
     @GetMapping("/improve")
-    public String improve(Model model) {
+    public String improve(Model model, @RequestParam(value = "preferredModel", required = false) String preferredModel) {
         // Fetch available models from the API
         List<String> availableModels = modelDiscoveryService.getAvailableModels();
         model.addAttribute("availableModels", availableModels);
@@ -56,10 +58,10 @@ public class TextImprovementController {
             model.addAttribute("customPrompt", textImprovementService.getDefaultPrompt());
         }
         
-        // If no selected model is present, use the preferred model based on rules
+        // If no selected model is present, determine the best model to use
         if (!model.containsAttribute("selectedModel") && !availableModels.isEmpty()) {
-            String preferredModel = modelDiscoveryService.getPreferredModel(availableModels);
-            model.addAttribute("selectedModel", preferredModel);
+            String selectedModel = modelDiscoveryService.getValidatedPreferredModel(availableModels, preferredModel);
+            model.addAttribute("selectedModel", selectedModel);
         }
         
         return "improve";
@@ -102,12 +104,16 @@ public class TextImprovementController {
             return "redirect:/improve";
         }
 
-        String improvedText = textImprovementService.improveText(inputText, customPrompt, selectedModel);
+        // Validate the selected model against available models
+        List<String> availableModels = modelDiscoveryService.getAvailableModels();
+        String validatedModel = modelDiscoveryService.getValidatedPreferredModel(availableModels, selectedModel);
+        
+        String improvedText = textImprovementService.improveText(inputText, customPrompt, validatedModel);
         
         redirectAttributes.addFlashAttribute("inputText", inputText);
         redirectAttributes.addFlashAttribute("improvedText", improvedText);
         redirectAttributes.addFlashAttribute("customPrompt", customPrompt != null ? customPrompt : textImprovementService.getDefaultPrompt());
-        redirectAttributes.addFlashAttribute("selectedModel", selectedModel);
+        redirectAttributes.addFlashAttribute("selectedModel", validatedModel);
         
         return "redirect:/improve";
     }
