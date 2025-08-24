@@ -78,12 +78,67 @@ function getMessage(key, ...args) {
 // Initialize messages when DOM is loaded
 document.addEventListener('DOMContentLoaded', loadMessages);
 
+function lockInputs() {
+    // Lock all form inputs to prevent user interaction during requests
+    const inputsToLock = [
+        'inputText',
+        'customPrompt',
+        'selectedModel',
+        'current-model-display',
+        'submitBtn',
+        'externalLlmBtn'
+    ];
+    
+    inputsToLock.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.disabled = true;
+            element.setAttribute('aria-busy', 'true');
+        }
+    });
+    
+    // Also lock language and theme buttons
+    document.querySelectorAll('.lang-btn, .theme-btn, .prompt-toggle-btn').forEach(btn => {
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
+    });
+}
+
+function unlockInputs() {
+    // Unlock all form inputs
+    const inputsToUnlock = [
+        'inputText',
+        'customPrompt', 
+        'selectedModel',
+        'current-model-display',
+        'submitBtn',
+        'externalLlmBtn'
+    ];
+    
+    inputsToUnlock.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.disabled = false;
+            element.removeAttribute('aria-busy');
+        }
+    });
+    
+    // Also unlock language and theme buttons
+    document.querySelectorAll('.lang-btn, .theme-btn, .prompt-toggle-btn').forEach(btn => {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+    });
+}
+
 function switchLanguage(lang) {
     // Validate language parameter
     if (lang !== 'de' && lang !== 'en') {
         console.warn('Invalid language:', lang);
         return;
     }
+    
+    // Lock inputs during language switch
+    lockInputs();
     
     // Save current text input before switching
     const inputText = document.getElementById('inputText');
@@ -331,16 +386,9 @@ function showLoading() {
     const loading = document.getElementById('loading');
     const inputText = document.getElementById('inputText');
     
-    // Validate form before submission
-    if (!validateForm()) {
-        return false;
-    }
-    
-    submitBtn.disabled = true;
     const pseudoverb = getRandomPseudoverb();
 
     submitBtn.textContent = getMessage('form.submit.processing');
-    submitBtn.setAttribute('aria-busy', 'true');
     loading.style.display = 'block';
     
     // Create loading text with random pseudoverb
@@ -350,6 +398,9 @@ function showLoading() {
     
     // Remove any existing error states
     clearFormErrors();
+    
+    // Lock inputs immediately - form data should already be captured by browser
+    lockInputs();
     
     return true;
 }
@@ -704,7 +755,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 return false;
             }
-            return showLoading();
+            
+            // Show loading state and lock inputs after a brief delay
+            // This ensures form data is captured before inputs are disabled
+            setTimeout(() => {
+                showLoading();
+            }, 10);
+            
+            // Let the form submit normally
+            return true;
         });
         
         // Real-time validation feedback for text improvement form

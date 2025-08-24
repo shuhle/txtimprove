@@ -134,6 +134,22 @@
     color: var(--text-primary);
 }
 
+.lang-btn:disabled, .theme-btn:disabled {
+    background: var(--text-muted);
+    border-color: var(--border);
+    color: var(--background);
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+.lang-btn:disabled:hover, .theme-btn:disabled:hover {
+    background: var(--text-muted);
+    border-color: var(--border);
+    color: var(--background);
+    transform: none;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
@@ -312,6 +328,22 @@ textarea::placeholder {
     color: var(--text-muted);
 }
 
+textarea:disabled {
+    background: var(--primary-light);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+    border-color: var(--border);
+}
+
+select:disabled {
+    background: var(--primary-light);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+    border-color: var(--border);
+}
+
 
 .btn {
     background: var(--primary);
@@ -346,6 +378,10 @@ textarea::placeholder {
     border: none;
 }
 
+.btn#externalLlmBtn:focus:not(:focus-visible) {
+    border: 1px solid var(--border);
+}
+
 .btn:active {
     transform: translateY(0);
 }
@@ -354,6 +390,7 @@ textarea::placeholder {
     background: var(--text-muted);
     cursor: not-allowed;
     transform: none;
+    opacity: 0.6;
 }
 
 .result-section {
@@ -710,6 +747,34 @@ textarea[aria-invalid="true"]:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 0 0 1px var(--focus-ring-offset);
     border-color: var(--focus-ring);
+}
+
+.prompt-toggle-btn:disabled {
+    background: var(--primary-light);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.prompt-toggle-btn:disabled:hover {
+    background: var(--primary-light);
+    border-color: var(--border);
+    color: var(--text-muted);
+}
+
+.current-model:disabled {
+    background: var(--primary-light);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.current-model:disabled:hover {
+    background: var(--primary-light);
+    border-color: var(--border);
+    color: var(--text-muted);
 }
 
 .prompt-container {
